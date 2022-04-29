@@ -60,4 +60,4 @@ Alternatively, these parameters can be used to leverage existing KeyVault and Lo
 
 4 - The data summary and details can be visualized using the provided Guardrails workbook.
 
-![Setup and Operation](./SolutionDiagram.png "Setup and Operation")
+![Setup and Operation](./media/SolutionDiagram.png "Setup and Operation")
