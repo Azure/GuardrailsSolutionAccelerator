@@ -3,7 +3,7 @@
 How the controls work.
 
 ## GUARDRAIL 1 PROTECT ROOT  GLOBAL ADMINS ACCOUNT
-In this control the solution tries to validate muliple items as follow.
+In this control the solution tries to validate multiple items as follow.
 
 1. Break Glass accounts Creation
 
@@ -15,9 +15,9 @@ In this control the solution tries to validate muliple items as follow.
 
       ![BreakGlassAccountProcedure.txt uploaded to the storage account](/docs/media/BreakGlassAccountProcedure.png)
 
-3. Break Glass Accounts Owners contacs information
+3. Break Glass Accounts Owners contacts information
       
-      Break Glass Account must be owned by  in the orgnization, the owner is the manager of the accounts , the solution will verify if the manager information for both Break Glass Accounts is populated, once the solution detects the manager information for both accounts,  the check mark status will be changed from (❌) to (✔️).
+      Break Glass Account must be owned by  in the organization, the owner is the manager of the accounts , the solution will verify if the manager information for both Break Glass Accounts is populated, once the solution detects the manager information for both accounts,  the check mark status will be changed from (❌) to (✔️).
 
       ![BreakGlassAccountProcedure.txt uploaded to the storage account](/docs/media/BreakGlassAccountOwnersContactInformation.png)
       
@@ -37,7 +37,7 @@ In this control the solution tries to validate muliple items as follow.
 
 6. Break Glass Accounts Restricted Access 
 
-      The module checks if the multifactor authentication (MFA) is enable on the break glass account, if MFA is not enabled the check mark status will be changed from (❌) to (✔️).
+      The module checks if the multi-factor authentication (MFA) is enable on the break glass account, if MFA is not enabled the check mark status will be changed from (❌) to (✔️).
 
 7. Break Glass Accounts must be created in the tenant Azure Active Directory
 
@@ -57,17 +57,30 @@ This Module...
 This Module...
 
 ## GUARDRAIL 5 DATA LOCATION
+
+### Check-DataLocation
+
+### Check-PBMMPolicy
     
-This Module...
+This Module will detect the PBMM Initiative. The detection will happen at the Root Tenant management group and down, looking for all subscriptions and management groups. Any subscription of MG without the applied initial will be marked as non compliant.
 
 ## GUARDRAIL 6 PROTECTION OF DATA-AT-REST
     
-This Module...
+This module will detect the PBMM and look for specific policies not to be exempted. The compliance will fail right away if the PBMM policy is not applied. If applied, the following policies will be checked for exemptions:
 
+- "TransparentDataEncryptionOnSqlDatabasesShouldBeEnabled"
+- "DiskEncryptionShouldBeAppliedOnVirtualMachines"
 
 ## Module 7GUARDRAIL 7 PROTECTION OF DATA-IN-TRANSIT
     
-This Module...
+This module will detect the PBMM and look for specific policies not to be exempted. The compliance will fail right away if the PBMM policy is not applied. If applied, the following policies will be checked for exemptions:
+
+- "FunctionAppShouldOnlyBeAccessibleOverHttps"
+- "WebApplicationShouldOnlyBeAccessibleOverHttps"
+- "ApiAppShouldOnlyBeAccessibleOverHttps"
+- "OnlySecureConnectionsToYourRedisCacheShouldBeEnabled"
+- "SecureTransferToStorageAccountsShouldBeEnabled"
+   
 
 ## Guardrails Module 8 - Separation and Segmentation
 
@@ -108,7 +121,32 @@ This Module...
     
 This module will detect the items below:
 
-
+| Item | Description |
+| ----------- | ----------- |
+| SECURITY ||
+| Create a RG for security monitoring | Implied since the Log Analytics workspace needs to be informed as a parameter |
+|Create LAW, Retention needs to be 2 years.|Checks the retention of the provided LAW|
+|Workspace summary, add the log types:  activity log analytics. Ensure to add all subscriptions except sandbox|Checks for a data source set to Activity Logs |
+|Workspace summary, add, anti-malware assessment|Checks for the presence of the anti-malware solution|
+|Workspace summary, add, KeyVault analytics|This solution has been deprecated. KeyVault insights is recommended. **Not being detected at the moment**|
+|Create a resource, automation account | Checks for a connected automation account in the provided LAW|
+|Go to RG. Select the account, update management, select the LAW and enable| Checks for the Update Management solution in the provided LAW|
+|In the tenant, select diagnostic setting. Select the LAW and select audit logs, sigint logs |**TBD - Not functional right now**|
+|Need to redirect blueprint to this LAW |**TBD**|
+|Go to Azure sentinel and select the LAW and add it to sentinel. Go to data connectors. Add azure activity, office 365 and anything we use |**TBD**|
+|HEALTH||
+|create a RG for performance and health monitoring. Create LAW, Retention needs to be 90 days.   |Checks for the specific retention in the provided health LAW|
+|Workspace summary, add the log types . Make sure to add all subscriptions except sandbox |Right now all subscriptions are tested, **no exceptions.**|
+|Workspace summary, add, Azure Log Analytics Agent Health |Checks for the solution|
+|Create a resource, automation account |Checks for a connected automation account in the provided LAW|
+|Go to RG. Select the account, update management, select the LAW and enable |Checks for the Update Management solution in the provided LAW|
+|In the tenant, select diagnostic setting. Select the LAW and select ….. |**TBD**|
+|Need to redirect blueprint to this LAW |**TBD**|
+|DEFENDER FOR CLOUD||
+|Standard tier | Considered compliant if all tiers are enabled.|
+|Data collection  -  Send all events |**TBD**|
+|Email notification - enter email and phone number (select send email for high severity alerts) | **Any email or telephone** found is considered compliant.|
+|Threat detection – enable |**TBD**|
 
 ## GUARDRAIL 12 CONFIGURATION OF CLOUD MARKETPLACES
     
