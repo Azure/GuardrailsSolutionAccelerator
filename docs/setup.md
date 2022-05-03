@@ -11,6 +11,24 @@ Clone repository
 cd to `.\Guardrailssolutionaccelerator`
 
 Edit config.json with `code .\config.json' and adjust parameters as required.
+All named resources will have the first 6 characters of the tenant Id appended to their names.
+
+|Parameter|Description|
+|---------|-----------|
+|keyVaultName|Name for the KeyVault resource|
+|resourcegroup|Resource Group to deploy the solution|
+|region|Location to deploy. Canadacentral is the default|
+|storageaccountName||
+|logAnalyticsworkspaceName||
+|autoMationAccountName||
+|FirstBreakGlassAccountUPN||
+|SecondBreakGlassAccountUPN||
+|PBMMPolicyID|Guid of the PBMM applied policy. 4c4a5f27-de81-430b-b4e5-9cbd50595a87 is the default Id but a customized version may have been used.|
+|AllowedLocationPolicyId|Guid for the Allowed Location policy. e56962a6-4747-49cd-b67b-bf8b01975c4c is the default|
+|DepartmentNumber||
+|CBSSubscriptionName|Subscription Id containing the CBS solution|
+|SecurityLAWResourceId|Full resource Id of the Log analytics workspace used for Security|
+|HealthLAWResourceId|Full resource Id of the Log analytics workspace used for resource Health|
 
 Save the file and exit VSCode.
 
