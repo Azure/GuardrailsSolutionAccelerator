@@ -16,7 +16,7 @@ param CBSSubscriptionName string
 param SecurityLAWResourceId string
 param HealthLAWResourceId string
 param CustomModulesBaseURL string = 'https://raw.githubusercontent.com/igomaa/GoCGuardrailsSolutionAccelerator/Final/psmodules'
-//var <variable-name> = <variable-value>
+param DeployTelemetry bool = true
 var containername = 'guardrailsstorage'
 var vaultUri = 'https://${kvName}.vault.azure.net/'
 var rg=resourceGroup().name
@@ -461,7 +461,10 @@ var wbConfig3='''
 var wbConfig='${wbConfig1}${wbConfig2}${wbConfig3}'
 //Resources:
 //KeyVault
-
+module telemetry './nested_telemetry.bicep' = if (DeployTelemetry) {
+  name: 'pid-9c273620-d12d-4647-878a-8356201c7fe8'
+  params: {}
+}
 resource guardrailsAC 'Microsoft.Automation/automationAccounts@2021-06-22' = {
   name: automationAccountName
   location: location
@@ -485,15 +488,6 @@ resource guardrailsAC 'Microsoft.Automation/automationAccounts@2021-06-22' = {
       contentLink: {
         uri: 'https://devopsgallerystorage.blob.core.windows.net/packages/omsingestionapi.1.6.0.nupkg'
         version: '1.6.0'
-      }
-    }
-  }
-  resource AzureGraph 'modules' ={
-    name: 'AzureGraph'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/AzureGraph.zip'
-        version: '1.0.0'
       }
     }
   }
