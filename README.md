@@ -5,11 +5,33 @@
 </p>
 ## Introduction
 
-The purpose of the reference implementation is to help Canadian Public Sector departments and agencies to identify and remediate the [GC Cloud Guardrails](https://github.com/canada-ca/cloud-guardrails#gc-cloud-guardrails) to ensure on-going compliance with the Guardrails requirements.The GC Cloud Guardrails requirements can be found in the [Canadian Governments public GitHub repository](https://github.com/canada-ca/cloud-guardrails#summary---initial-30-days).
+The purpose of the reference implementation is to help Canadian Public Sector departments and agencies to identify and remediate the [GC C
+17
+ 
+</p>
+18
+ 
+## Introduction
+19
+ 
+The purpose of the reference implementation is to help Canadian Public Sector departments and agencies to identify and remediate the [GC Cloud Guardrails](https://github.com/canada-ca/cloud-guardrails#gc-cloud-guardrails)   to ensure on-going compliance with the Guardrails requirements.The GC Cloud Guardrails requirements can be found in the [Canadian Governments public GitHub repository](https://github.com/canada-ca/cloud-guardrails#summary---initial-30-days).
+20
+ 
+
+21
+ 
+## Goals
+22
+
+
+23
+ 
+Implementing the requiloud Guardrails](https://github.com/canada-ca/cloud-guardrails#gc-cloud-guardrails) to ensure on-going compliance with the Guardrails requirements.The GC Cloud Guardrails requirements can be found in the [Canadian Governments public GitHub repository](https://github.com/canada-ca/cloud-guardrails#summary---initial-30-days).
 
 ## Goals
 
 Implementing the required GC Cloud Guardrails can take a considerable amount of time. This solution checks the environment for all [12 Cloud Guardrails Controls](https://github.com/canada-ca/cloud-guardrails#summary---initial-30-days) and provides guidance on what is required to remediate any that are non-compliant.  The solution runs on an ongoing basis, ensuring that your environment continues to meet the baseline requirements.  
+
 
 ## Architecture
 1. The solution is deployment from the Azure Portal's cloud shell. After cloning the repository, some configuration may be done to the provided config.json file. Once triggered, the setup will deploy all the required components.
