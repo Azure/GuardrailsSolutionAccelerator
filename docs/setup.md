@@ -72,15 +72,3 @@ Alternatively, these parameters can be used to leverage existing KeyVault and Lo
 `$existingWorkSpaceRG`: the resource group containing the Log Analytics Workspace above.
 
 `$skipDeployment`: the setup script will run everything but the Azure Resources deployment (for debug/testing only)
-
-## How it works
-
-1 - The solution is deployment from the Azure Portal's cloud shell. After cloning the repository, some configuration may be done to the provided `config.json` file. Once triggered, the setup will deploy all the required components.
-
-2 - Azure Automation will trigger the main runbook every hour. It will fetch information from multiple sources (AAD, Azure Resources, Storage Account).
-
-3 - The data is then stored into the Log Analytics workspace.
-
-4 - The data summary and details can be visualized using the provided Guardrails workbook.
-
-![Setup and Operation](./media/SolutionDiagram.png "Setup and Operation")
