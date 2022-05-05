@@ -2,11 +2,16 @@
 
 ## Configuration
 
-Navigate to shell.azure.com and authenticate as a user that has Azure and Azure AD Permissions (To assign permissions to the Automation Account Managed Identity)
+Navigate to Cloud Shell (from the Azure Portal) and authenticate as a user that has Azure and Azure AD Permissions (To assign permissions to the Automation Account Managed Identity)
 
-Clone repository
+<p align="center">
+<img src="./media/AzurePortalCloudShell.png" />
+</p>
+<details>
+ <summary>Clone repository</summary> <p> `git clone https://github.com/Azure/GuardrailsSolutionAccelerator.git`
+ </p> 
+</details>
 
-`git clone https://github.com/Azure/GuardrailsSolutionAccelerator.git`
 
 cd to `.\Guardrailssolutionaccelerator`
 
