@@ -3,30 +3,12 @@
 # GuardRails Solution Accelartor for Canadian Public Sector
 
 </p>
-## Introduction
 
-The purpose of the reference implementation is to help Canadian Public Sector departments and agencies to identify and remediate the [GC C
-17
- 
-</p>
-18
  
 ## Introduction
-19
  
 The purpose of the reference implementation is to help Canadian Public Sector departments and agencies to identify and remediate the [GC Cloud Guardrails](https://github.com/canada-ca/cloud-guardrails#gc-cloud-guardrails)   to ensure on-going compliance with the Guardrails requirements.The GC Cloud Guardrails requirements can be found in the [Canadian Governments public GitHub repository](https://github.com/canada-ca/cloud-guardrails#summary---initial-30-days).
-20
  
-
-21
- 
-## Goals
-22
-
-
-23
- 
-Implementing the requiloud Guardrails](https://github.com/canada-ca/cloud-guardrails#gc-cloud-guardrails) to ensure on-going compliance with the Guardrails requirements.The GC Cloud Guardrails requirements can be found in the [Canadian Governments public GitHub repository](https://github.com/canada-ca/cloud-guardrails#summary---initial-30-days).
 
 ## Goals
 
@@ -41,13 +23,14 @@ Implementing the required GC Cloud Guardrails can take a considerable amount of 
 3. The data is then stored into the Log Analytics workspace.
 
 4. The data summary and details can be visualized using the provided Guardrails workbook.
+
 <p align="center">
 <img src="./docs/media/SolutionDiagram.png " />
 </p>
 
 ## Setup 
 The setup document describing how to deploy the Guardrails Solution Accelerator can be found here: [Setup](./docs/setup.md)
-## Non-Goals
+
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
