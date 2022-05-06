@@ -1,6 +1,6 @@
 <p align="center">
 
-# GuardRails Solution Accelartor for Canadian Public Sector
+# GuardRails Solution Accelerator for Canadian Public Sector
 
 </p>
 
@@ -31,6 +31,9 @@ Implementing the required GC Cloud Guardrails can take a considerable amount of 
 ## Setup 
 The setup document describing how to deploy the Guardrails Solution Accelerator can be found here: [Setup](./docs/setup.md)
 
+## How it works 
+The solution has multiple modules, each module verifies specific set of settings in the enviroment and compares them with the required [GC guardrails settings](https://github.com/canada-ca/cloud-guardrails#gc-cloud-guardrails) recommended by [Treasury Board of Canada](https://www.canada.ca/en/treasury-board-secretariat.html)   [and Shared Services Canada](https://www.canada.ca/en/shared-services.html), in order to understand what the modules are looking for , please check the [controls documents](./docs/controls.md)
+
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
@@ -38,7 +41,7 @@ When you submit a pull request, a CLA bot will automatically determine whether y
 
 This project has adopted the Microsoft Open Source Code of Conduct. For more information see the Code of Conduct FAQ or contact opencode@microsoft.com with any additional questions or comments.
 ## Telemetry
-oft can correlate these resources used to support the deployments. Microsoft collects this information to provide the best experiences with their products and to operate their business. The telemetry is collected through customer usage attribution. The data is collected and governed by Microsoft's privacy policies, located at https://www.microsoft.com/trustcenter.
+Microsoft can correlate these resources used to support the deployments. Microsoft collects this information to provide the best experiences with their products and to operate their business. The telemetry is collected through customer usage attribution. The data is collected and governed by Microsoft's privacy policies, located at https://www.microsoft.com/trustcenter.
 
 If you don't wish to send usage data to Microsoft, you can set the customerUsageAttribution.enabled setting to false in config/telemetry.json. Learn more in our Azure DevOps Pipelines onboarding guide.
 
