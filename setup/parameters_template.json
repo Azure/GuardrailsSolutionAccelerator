@@ -43,15 +43,12 @@
     },
     "HealthLAWResourceId": {
       "value": "%HealthLAWResourceId%"
-<<<<<<< HEAD
     },
     "version": {
       "value": "%version%"
     },
     "releasedate": {
       "value": "%releasedate%"
-=======
->>>>>>> 90f025b360a6dcb00cdffa6cdf8d2892a3a6f256
     }
   }
 }

@@ -1,8 +1,0 @@
-{
-  "keyVaultName": "nguardrails",
-  "resourcegroup": "nguardrails",
-  "region": "CanadaCentral",
-  "storageaccountName": "nguardrails",
-  "logAnalyticsworkspaceName": "nguardrails",
-  "autoMationAccountName": "nguardrails",
-}
