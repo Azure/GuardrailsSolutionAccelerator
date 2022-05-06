@@ -24,6 +24,8 @@ param (
 #region Configuration and initialization
 # test
 #Configuration Variables
+$version='1.0'
+$releaseDate='2002-05-06'
 $randomstoragechars=-join ((97..122) | Get-Random -Count 4 | ForEach-Object {[char]$_})
 Write-Output "Reading Config file:"
 try {
@@ -156,6 +158,9 @@ $parameterTemplate=$parameterTemplate.Replace("%DepartmentNumber%",$DepartmentNu
 $parameterTemplate=$parameterTemplate.Replace("%CBSSubscriptionName%",$config.CBSSubscriptionName)
 $parameterTemplate=$parameterTemplate.Replace("%SecurityLAWResourceId%",$config.SecurityLAWResourceId)
 $parameterTemplate=$parameterTemplate.Replace("%HealthLAWResourceId%",$config.HealthLAWResourceId)
+$parameterTemplate=$parameterTemplate.Replace("%version%",$version)
+$parameterTemplate=$parameterTemplate.Replace("%releasedate%",$releaseDate)
+#writes the file
 $parameterTemplate | out-file .\parameters.json -Force
 #endregion
 
@@ -203,7 +208,8 @@ catch {"Error adding WS secret to KV.";break}
 #region Import main runbook
 Write-Verbose "Importing Runbook." #only one for now, as a template.
 try {
-    Import-AzAutomationRunbook -Name $mainRunbookName -Path "$mainRunbookpath\main.ps1" -Description $mainRunbookDescription -Type PowerShell -Published -ResourceGroupName $resourcegroup -AutomationAccountName $autoMationAccountName
+    Import-AzAutomationRunbook -Name $mainRunbookName -Path "$mainRunbookpath\main.ps1" -Description $mainRunbookDescription -Type PowerShell -Published `
+    -ResourceGroupName $resourcegroup -AutomationAccountName $autoMationAccountName -Tags @{version=$newversion}
     #Create schedule
     New-AzAutomationSchedule -ResourceGroupName $resourcegroup -AutomationAccountName $autoMationAccountName -Name "GR-Hourly" -StartTime (get-date).AddHours(1) -HourInterval 1
     #Register

@@ -1,26 +1,13 @@
 //Scope
 targetScope = 'resourceGroup'
 //Parameters and variables
-param storageAccountName string
 param subscriptionId string
 param location string = 'canadacentral'
-param kvName string = 'guardrails-kv'
-param automationAccountName string = 'guardrails-AC'
 param logAnalyticsWorkspaceName string = 'guardrails-LAW'
-param PBMMPolicyID string = '4c4a5f27-de81-430b-b4e5-9cbd50595a87'
-param AllowedLocationPolicyId string = 'e56962a6-4747-49cd-b67b-bf8b01975c4c'
-param DepartmentNumber string
-param deployKV bool = true
-param deployLAW bool = true
-param CBSSubscriptionName string 
-param SecurityLAWResourceId string
-param HealthLAWResourceId string
-param CustomModulesBaseURL string = 'https://raw.githubusercontent.com/Azure/GuardrailsSolutionAccelerator/Final/psmodules'
-param DeployTelemetry bool = true
+param workbookNameGuid string
+param newWorkbookVersion string
 param version string
-param releaseDate string 
-var containername = 'guardrailsstorage'
-var vaultUri = 'https://${kvName}.vault.azure.net/'
+param releaseDate string
 var rg=resourceGroup().name
 var wbConfig1 ='''
 {
@@ -29,7 +16,7 @@ var wbConfig1 ='''
     {
       "type": 1,
       "content": {
-        "json": "## Guardrails Accelerator",
+        "json": "## Guardrails Accelerator - Updated",
         "style": "info"
       },
       "name": "Details Title"
@@ -463,416 +450,24 @@ var wbConfig3='''
 var wbConfig='${wbConfig1}${wbConfig2}${wbConfig3}'
 //Resources:
 //KeyVault
-module telemetry './nested_telemetry.bicep' = if (DeployTelemetry) {
-  name: 'pid-9c273620-d12d-4647-878a-8356201c7fe8'
-  params: {}
-}
-resource guardrailsAC 'Microsoft.Automation/automationAccounts@2021-06-22' = {
-  name: automationAccountName
-  location: location
-  tags: {
-    version: version
-    releasedate: releaseDate
-  }
-  identity: {
-     type: 'SystemAssigned'
-  }
-  properties: {
-    publicNetworkAccess: true
-    disableLocalAuth: false
-    sku: {
-        name: 'Basic'
-    }
-    encryption: {
-        keySource: 'Microsoft.Automation'
-        identity: {}
-    }
-  }
-  resource OMSModule 'modules' ={
-    name: 'OMSIngestionAPI'
-    properties: {
-      contentLink: {
-        uri: 'https://devopsgallerystorage.blob.core.windows.net/packages/omsingestionapi.1.6.0.nupkg'
-        version: '1.6.0'
-      }
-    }
-  }
-  resource module1 'modules' ={
-    name: 'Check-BreackGlassAccountOwnersInformation'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-BreackGlassAccountOwnersInformation.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module2 'modules' ={
-    name: 'Check-BreakGlassAccountIdentityProtectionLicense'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-BreakGlassAccountIdentityProtectionLicense.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module3 'modules' ={
-    name: 'Check-BreakGlassAccountProcedure'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-BreakGlassAccountProcedure.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module4 'modules' ={
-    name: 'Check-DeprecatedAccounts'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-DeprecatedAccounts.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module5 'modules' ={
-    name: 'Check-ExternalAccounts'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-ExternalAccounts.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module6 'modules' ={
-    name: 'Check-GuardRailsConditionalAccessPolicie'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-GuardRailsConditionalAccessPolicie.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module7 'modules' ={
-    name: 'Check-MonitorAccount'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-MonitorAccount.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module8 'modules' ={
-    name: 'Check-PBMMPolicy'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-PBMMPolicy.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module9 'modules' ={
-    name: 'Check-SubnetComplianceStatus'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-SubnetComplianceStatus.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module10 'modules' ={
-    name: 'Check-VNetComplianceStatus'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-VNetComplianceStatus.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module11 'modules' ={
-    name: 'Detect-UserBGAUsersAuthMethods'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Detect-UserBGAUsersAuthMethods.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module12 'modules' ={
-    name: 'Get-AzureADLicenseType'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Get-AzureADLicenseType.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module13 'modules' ={
-    name: 'Get-Tags'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Get-Tags.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-resource module14 'modules' ={
-    name: 'Validate-BreakGlassAccount'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Validate-BreakGlassAccount.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-  resource module15 'modules' ={
-    name: 'Check-AllowedLocationPolicy'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-AllowedLocationPolicy.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-  resource module16 'modules' ={
-    name: 'Check-PrivateMarketPlace'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-PrivateMarketPlace.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-  resource module17 'modules' ={
-    name: 'Az.Marketplace'
-    properties: {
-      contentLink: {
-        uri: 'https://devopsgallerystorage.blob.core.windows.net:443/packages/az.marketplace.0.3.0.nupkg'
-        version: '0.3.0'
-      }
-    }
-    dependsOn: [
-      module18
-    ]
-  }
-  resource module18 'modules' ={
-    name: 'Az.Accounts'
-    properties: {
-      contentLink: {
-        uri: 'https://devopsgallerystorage.blob.core.windows.net:443/packages/az.accounts.2.7.2.nupkg'
-        version: '0.3.0'
-      }
-    }
-  }
-  resource module19 'modules' ={
-    name: 'Check-CyberSecurityServices'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-CyberSecurityServices.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-  resource module20 'modules' ={
-    name: 'Check-LoggingAndMonitoring'
-    properties: {
-      contentLink: {
-        uri: '${CustomModulesBaseURL}/Check-LoggingAndMonitoring.zip'
-        version: '1.0.0'
-      }
-    }
-  }
-  resource variable1 'variables' = {
-    name: 'KeyvaultName'
-    properties: {
-        isEncrypted: false
-        value: '"${guardrailsKV.name}"'
-    }
-  }
-  
-  resource variable2 'variables' = {
-    'name': 'WorkSpaceID'
-    'properties': {
-        'isEncrypted': false
-        'value': '"${guardrailsLogAnalytics.properties.customerId}"'
-    }
-  }
-  resource variable3 'variables' = {
-    'name': 'LogType'
-    'properties': {
-        'isEncrypted': false
-        'value': '"GuardrailsCompliance"'
-    }
-  }
-  resource variable4 'variables' = {
-    'name': 'PBMMPolicyID'
-    'properties': {
-        'isEncrypted': false
-        'value': '"/providers/Microsoft.Authorization/policySetDefinitions/${PBMMPolicyID}"'
-    }
-  }
-  resource variable5 'variables' = {
-    'name': 'GuardrailWorkspaceIDKeyName'
-    'properties': {
-        'isEncrypted': false
-        'value': '"WorkSpaceKey"'
-    }
-  }
-  resource variable6 'variables' = {
-    'name': 'StorageAccountName'
-    'properties': {
-        'isEncrypted': false
-        'value': '"${guardrailsStorage.name}"'
-    }
-  }
-  resource variable7 'variables' = {
-    'name': 'ContainerName'
-    'properties': {
-        'isEncrypted': false
-        'value': '"${containername}"'
-    }
-  }
-  resource variable8 'variables' = {
-    'name': 'ResourceGroupName'
-    'properties': {
-        'isEncrypted': false
-        'value': '"${resourceGroup().name}"'
-    }
-  }
-  resource variable9 'variables' = {
-    'name': 'AllowedLocationPolicyId'
-    'properties': {
-        'isEncrypted': false
-        'value': '"/providers/Microsoft.Authorization/policyDefinitions/${AllowedLocationPolicyId}"'
-    }
-  }
-  resource variable10 'variables' = {
-    name: 'DepartmentNumber'
-    'properties': {
-      'isEncrypted': false
-      'value': '"${DepartmentNumber}"'
-  }
-  }
-  resource variable11 'variables' = {
-    name: 'CBSSubscriptionName'
-    'properties': {
-      'isEncrypted': false
-      'value': '"${CBSSubscriptionName}"'
-  }
-  }
-  resource variable12 'variables' = {
-    name: 'SecurityLAWResourceId'
-    'properties': {
-      'isEncrypted': false
-      'value': '"${SecurityLAWResourceId}"'
-  }
-  }
-  resource variable14 'variables' = {
-    name: 'HealthLAWResourceId'
-    'properties': {
-      'isEncrypted': false
-      'value': '"${HealthLAWResourceId}"'
-  }
-  }
-}
 
-resource guardrailsKV 'Microsoft.KeyVault/vaults@2021-06-01-preview' = if (deployKV) {
-  name: kvName
-  location: location
-  tags: {
-    version: version
-    releasedate: releaseDate
-  }
-  properties: {
-    sku: {
-      family: 'A'
-      name:  'standard'
-    }
-    tenantId: guardrailsAC.identity.tenantId
-    enabledForDeployment: false
-    enabledForDiskEncryption: false
-    enabledForTemplateDeployment: false
-    enableSoftDelete: false
-    softDeleteRetentionInDays: 90
-    enableRbacAuthorization: true
-    vaultUri: vaultUri
-    provisioningState: 'Succeeded'
-    publicNetworkAccess: 'Enabled'
-  }
-}
-
-resource guardrailsLogAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = if (deployLAW) {
+resource guardrailsLogAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' existing = {
   name: logAnalyticsWorkspaceName
+}
+
+resource guarrailsWorkbooks  'Microsoft.Insights/workbooks@2021-08-01' = {
   location: location
-  tags: {
+  kind: 'shared'
+    tags: {
     version: version
     releasedate: releaseDate
   }
-  properties: {
-    sku: {
-      name: 'PerGB2018'
-    }
+  name: workbookNameGuid
+  properties:{
+    displayName: 'Guardrails'
+    serializedData: wbConfig
+    version: newWorkbookVersion
+    category: 'workbook'
+    sourceId: guardrailsLogAnalytics.id
   }
 }
-
-resource guarrailsWorkbooks 'Microsoft.Insights/workbooks@2021-08-01' = if (deployLAW) {
-location: location
-kind: 'shared'
-name: guid('guardrails')
-properties:{
-  displayName: 'Guardrails'
-  serializedData: wbConfig
-  version: '1.0'
-  category: 'workbook'
-  sourceId: guardrailsLogAnalytics.id
-}
-
-}
-//Storage Account
-resource guardrailsStorage 'Microsoft.Storage/storageAccounts@2021-06-01' = {
-  name: storageAccountName
-  location: location
-  sku: {
-    name: 'Standard_LRS'
-  }
-  kind: 'StorageV2'
-  properties: {
-    accessTier: 'Hot'
-    allowBlobPublicAccess: false
-    allowSharedKeyAccess: true
-    supportsHttpsTrafficOnly: true
-  }
-  resource blobServices 'blobServices'={
-    name: 'default'
-    properties: {
-        cors: {
-            corsRules: []
-        }
-        deleteRetentionPolicy: {
-            enabled: false
-        }
-    }
-    resource container1 'containers'={
-      name: containername
-      properties: {
-        immutableStorageWithVersioning: {
-            enabled: false
-        }
-        denyEncryptionScopeOverride: false
-        defaultEncryptionScope: '$account-encryption-key'
-        publicAccess: 'None'
-      }
-    }
-    resource container2 'containers'={
-      name: 'psmodules'
-      properties: {
-        immutableStorageWithVersioning: {
-            enabled: false
-        }
-        denyEncryptionScopeOverride: false
-        defaultEncryptionScope: '$account-encryption-key'
-        publicAccess: 'None'
-      }
-    }
-  }
-}
-
-
