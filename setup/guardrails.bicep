@@ -15,10 +15,15 @@ param deployLAW bool = true
 param CBSSubscriptionName string 
 param SecurityLAWResourceId string
 param HealthLAWResourceId string
+<<<<<<< HEAD
 param CustomModulesBaseURL string = 'https://raw.githubusercontent.com/Azure/GuardrailsSolutionAccelerator/Final/psmodules'
 param DeployTelemetry bool = true
 param version string
 param releaseDate string 
+=======
+param CustomModulesBaseURL string = 'https://raw.githubusercontent.com/igomaa/GoCGuardrailsSolutionAccelerator/Final/psmodules'
+param DeployTelemetry bool = true
+>>>>>>> 90f025b360a6dcb00cdffa6cdf8d2892a3a6f256
 var containername = 'guardrailsstorage'
 var vaultUri = 'https://${kvName}.vault.azure.net/'
 var rg=resourceGroup().name
@@ -470,10 +475,13 @@ module telemetry './nested_telemetry.bicep' = if (DeployTelemetry) {
 resource guardrailsAC 'Microsoft.Automation/automationAccounts@2021-06-22' = {
   name: automationAccountName
   location: location
+<<<<<<< HEAD
   tags: {
     version: version
     releasedate: releaseDate
   }
+=======
+>>>>>>> 90f025b360a6dcb00cdffa6cdf8d2892a3a6f256
   identity: {
      type: 'SystemAssigned'
   }
@@ -777,10 +785,13 @@ resource module14 'modules' ={
 resource guardrailsKV 'Microsoft.KeyVault/vaults@2021-06-01-preview' = if (deployKV) {
   name: kvName
   location: location
+<<<<<<< HEAD
   tags: {
     version: version
     releasedate: releaseDate
   }
+=======
+>>>>>>> 90f025b360a6dcb00cdffa6cdf8d2892a3a6f256
   properties: {
     sku: {
       family: 'A'
@@ -802,10 +813,13 @@ resource guardrailsKV 'Microsoft.KeyVault/vaults@2021-06-01-preview' = if (deplo
 resource guardrailsLogAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = if (deployLAW) {
   name: logAnalyticsWorkspaceName
   location: location
+<<<<<<< HEAD
   tags: {
     version: version
     releasedate: releaseDate
   }
+=======
+>>>>>>> 90f025b360a6dcb00cdffa6cdf8d2892a3a6f256
   properties: {
     sku: {
       name: 'PerGB2018'

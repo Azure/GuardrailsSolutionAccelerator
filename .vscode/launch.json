@@ -4,12 +4,15 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+<<<<<<< HEAD
     {
         "name": "PowerShell Interactive Session",
         "type": "PowerShell",
         "request": "launch",
         "cwd": ""
     },
+=======
+>>>>>>> 90f025b360a6dcb00cdffa6cdf8d2892a3a6f256
         {
             "name": "PowerShell: Interactive Session",
             "type": "PowerShell",
