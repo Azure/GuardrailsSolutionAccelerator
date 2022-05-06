@@ -40,7 +40,7 @@ When you submit a pull request, a CLA bot will automatically determine whether y
 
 This project has adopted the Microsoft Open Source Code of Conduct. For more information see the Code of Conduct FAQ or contact opencode@microsoft.com with any additional questions or comments.
 ## Telemetry
-oft can correlate these resources used to support the deployments. Microsoft collects this information to provide the best experiences with their products and to operate their business. The telemetry is collected through customer usage attribution. The data is collected and governed by Microsoft's privacy policies, located at https://www.microsoft.com/trustcenter.
+Microsoft can correlate these resources used to support the deployments. Microsoft collects this information to provide the best experiences with their products and to operate their business. The telemetry is collected through customer usage attribution. The data is collected and governed by Microsoft's privacy policies, located at https://www.microsoft.com/trustcenter.
 
 If you don't wish to send usage data to Microsoft, you can set the customerUsageAttribution.enabled setting to false in config/telemetry.json. Learn more in our Azure DevOps Pipelines onboarding guide.
 
