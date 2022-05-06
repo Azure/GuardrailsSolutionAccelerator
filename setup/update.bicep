@@ -16,7 +16,7 @@ var wbConfig1 ='''
     {
       "type": 1,
       "content": {
-        "json": "## Guardrails Accelerator - Updated",
+        "json": "## Guardrails Accelerator",
         "style": "info"
       },
       "name": "Details Title"

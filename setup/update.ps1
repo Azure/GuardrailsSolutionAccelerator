@@ -6,9 +6,9 @@ param (
     [string]
     $configFilePath
 )
-$newversion='1.1'
+$newversion='1.2'
 $newWorkbookVersion='1.2'
-$newReleaseDate='2022-05-06'
+$newReleaseDate='2022-05-07'
 $baseContentUri='https://raw.githubusercontent.com/Azure/GuardrailsSolutionAccelerator/Final/psmodules'
 $tempFolder='/tmp/modules'
 if (!(get-childitem $tempFolder)) {
@@ -38,7 +38,7 @@ $autoMationAccountName=$config.autoMationAccountName+$tenantIDtoAppend
 # Add version test, based on Tags.
 
 Import-AzAutomationRunbook -Name 'main' -Path ./main.ps1 -AutomationAccountName $autoMationAccountName -ResourceGroupName $resourcegroup `
- -Force -Type PowerShell -Description "Main Guardrails module V.$newversion" -Tags @{version=$newversion} -Published 
+ -Force -Type PowerShell -Description "Main Guardrails module V.$newversion" -Tags @{version=$newversion; releaseDate=$newReleaseDate} -Published 
 #expand all modules to temp folder
 
 Get-ChildItem "$modulesFolder/*.zip" | ForEach-Object {Expand-Archive -path $_.FullName -DestinationPath $tempFolder -Force}
@@ -69,7 +69,15 @@ $parameters=@{
     logAnalyticsWorkspaceName=$logAnalyticsworkspaceName
     workbookNameGuid=$workbookname
     newWorkBookVersion=$newWorkbookVersion
+    version=$newWorkbookVersion
+    releaseDate=$newReleaseDate
 }
 #Deploys specific template with new workbook and other updates.
 New-AzResourceGroupDeployment -TemplateFile ./update.bicep -TemplateParameterFile ./update.bicep -ResourceGroupName $resourceGroup -templateParameterObject $parameters
 
+#update tags
+$resources=Get-AzResource -ResourceGroupName $resourcegroup 
+foreach ($r in $resources)
+{
+    update-AzTag @{version=$newversion; releaseDate=$newReleaseDate} -ResourceId $r.ResourceId -Operation Merge
+}
