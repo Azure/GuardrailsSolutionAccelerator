@@ -1,6 +1,6 @@
 <p align="center">
 
-# GuardRails Solution Accelartor for Canadian Public Sector
+# GuardRails Solution Accelerator for Canadian Public Sector
 
 </p>
 
