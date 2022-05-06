@@ -9,6 +9,7 @@ param (
 $newversion='1.1'
 $newWorkbookVersion='1.2'
 $newReleaseDate='2022-05-06'
+$baseContentUri='https://raw.githubusercontent.com/Azure/GuardrailsSolutionAccelerator/Final/psmodules'
 $tempFolder='/tmp/modules'
 if (!(get-childitem $tempFolder)) {
     mkdir $tempFolder
@@ -51,9 +52,13 @@ foreach ($m in $modules) {
         $newModuleVersion=($manifest| Select-String 'ModuleVersion').Tostring().Split("'")[1]
         if ($m.Version -eq $newModuleVersion) {
             "No Update Needed. Module: $m.Name.Old Version: $($m.Version). New Version: $newModuleVersion"
+            Import-AzAutomationModule -Name $m.Name -ResourceGroupName $resourceGroup -AutomationAccountName $autoMationAccountName `
+             -ContentLinkUri "$baseContentUri/$($m.Name).zip"
         }
         else {
-            "Update required: Module: $m.Name. Old Version: $($m.Version). New Version: $newModuleVersion" 
+            "Update required: Module: $m.Name. Old Version: $($m.Version). New Version: $newModuleVersion"
+            Import-AzAutomationModule -Name $m.Name -ResourceGroupName $resourceGroup -AutomationAccountName $autoMationAccountName `
+             -ContentLinkUri "$baseContentUri/$($m.Name).zip"
         }
     }
 }
