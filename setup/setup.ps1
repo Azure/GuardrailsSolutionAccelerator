@@ -209,7 +209,7 @@ catch {"Error adding WS secret to KV.";break}
 Write-Verbose "Importing Runbook." #only one for now, as a template.
 try {
     Import-AzAutomationRunbook -Name $mainRunbookName -Path "$mainRunbookpath\main.ps1" -Description $mainRunbookDescription -Type PowerShell -Published `
-    -ResourceGroupName $resourcegroup -AutomationAccountName $autoMationAccountName -Tags @{version=$newversion}
+    -ResourceGroupName $resourcegroup -AutomationAccountName $autoMationAccountName -Tags @{version=$version}
     #Create schedule
     New-AzAutomationSchedule -ResourceGroupName $resourcegroup -AutomationAccountName $autoMationAccountName -Name "GR-Hourly" -StartTime (get-date).AddHours(1) -HourInterval 1
     #Register
