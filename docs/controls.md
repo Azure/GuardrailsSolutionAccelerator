@@ -115,8 +115,7 @@ If any of the above rules is not true, the VNet will be considered not compliant
 
 ## GUARDRAIL 10 CYBER DEFENSE SERVICES
     
-This Module...
-
+  The solution will verify the existence of the [Cyber Defence Services resources](https://github.com/canada-ca/cloud-guardrails/blob/master/EN/10_Cyber-Defense-Services.md) in the dedicated Cyber Defence Services subscription in the config.json during the setup process. Once the solution detects these resources the check mark status will be changed from (❌) to (✔️).
 ## GUARDRAIL 11 LOGGING AND MONITORING
     
 This module will detect the items below:
@@ -150,4 +149,4 @@ This module will detect the items below:
 
 ## GUARDRAIL 12 CONFIGURATION OF CLOUD MARKETPLACES
     
-This Module...
+The solution will verify if the private market place has been created, Once the solution detects the private market place the check mark status will be changed from (❌) to (✔️).
