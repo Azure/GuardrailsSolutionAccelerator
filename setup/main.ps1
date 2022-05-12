@@ -121,7 +121,7 @@ Check-LoggingAndMonitoring -SecurityLAWResourceId $SecurityLAWResourceId `
 -ReportTime $ReportTime 
 #Guardrail module 12 
 "Check-PrivateMarketPlaceCreaion"
-Check-PrivateMarketPlaceCreaion -ControlName $Ctrname12  -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey -LogType $LogType
+Check-PrivateMarketPlaceCreation -ControlName $Ctrname12  -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey -LogType $LogType
 #Confirm-CloudConsoleAccess -token $token.access_token -PolicyName 
 
 # SIG # Begin signature block
