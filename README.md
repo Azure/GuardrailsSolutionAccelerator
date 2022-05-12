@@ -1,12 +1,6 @@
-<p align="center">
+# Guardrails Solution Accelerator for Canadian Public Sector
 
-# GuardRails Solution Accelerator for Canadian Public Sector
-
-</p>
-
- 
-## Introduction
- 
+## Introduction 
 The purpose of the reference implementation is to help Canadian Public Sector departments and agencies to identify and remediate the [GC Cloud Guardrails](https://github.com/canada-ca/cloud-guardrails#gc-cloud-guardrails)   to ensure on-going compliance with the Guardrails requirements.The GC Cloud Guardrails requirements can be found in the [Canadian Governments public GitHub repository](https://github.com/canada-ca/cloud-guardrails#summary---initial-30-days).
  
 
