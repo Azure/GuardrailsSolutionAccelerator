@@ -25,8 +25,7 @@ function Get-SubnetComplianceInformation {
     [PSCustomObject] $SubnetList = New-Object System.Collections.ArrayList
     $reservedSubnetNames=@("GatewaySubnet","AzureFirewallSubnet","AzureBastionSubnet")
     $allexcluded=$ExcludedSubnets+$reservedSubnetNames
-    $subs=Get-AzSubscription 
-
+    $subs=Get-AzSubscription | Where-Object {$_.State -eq 'Enabled'}
     if ($ExcludedSubnets -ne $null)
     {
         $ExcludedSubnetsList=$ExcludedSubnets.Split(",")

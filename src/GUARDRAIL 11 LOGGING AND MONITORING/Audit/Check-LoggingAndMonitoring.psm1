@@ -215,7 +215,7 @@ function Check-LoggingAndMonitoring {
     #
     $IsCompliant=$true
     $Comments=""
-    $sublist=Get-AzSubscription
+    $sublist=Get-AzSubscription | Where-Object {$_.State -eq 'Enabled'}
     # This will look for specific Defender for Cloud, on a per subscription basis.
     foreach ($sub in $sublist)
     {

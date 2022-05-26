@@ -20,7 +20,7 @@ function Check-CBSSensors {
     [string]$CBSKeyVaultName = "cbs-vault-" + $FirstTokenInTenantID
     [string]$CBSStorageAccountName = $FirstTokenInTenantID
     [string]$CBSAppServicePlanName = "CbsSitePlan"
-    $subs=Get-AzSubscription
+    $subs=Get-AzSubscription | Where-Object {$_.State -eq 'Enabled'}
     if ($null -ne $subs)
     {
         foreach ($sub in $subs)

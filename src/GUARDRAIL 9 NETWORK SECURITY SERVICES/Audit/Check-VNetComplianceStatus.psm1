@@ -21,7 +21,7 @@ function Get-VNetComplianceInformation {
     )
 [PSCustomObject] $VNetList = New-Object System.Collections.ArrayList
 
-$subs=Get-AzSubscription
+$subs=Get-AzSubscription | Where-Object {$_.State -eq 'Enabled'}
 
 if ($ExcludedVNets -ne $null)
 {
