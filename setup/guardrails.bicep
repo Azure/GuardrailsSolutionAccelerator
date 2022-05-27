@@ -15,7 +15,7 @@ param deployLAW bool = true
 param CBSSubscriptionName string 
 param SecurityLAWResourceId string
 param HealthLAWResourceId string
-param CustomModulesBaseURL string = 'https://raw.githubusercontent.com/Azure/GuardrailsSolutionAccelerator/psmodules'
+param CustomModulesBaseURL string = 'https://github.com/Azure/GuardrailsSolutionAccelerator/raw/main/psmodules'
 param DeployTelemetry bool = true
 param version string
 param releaseDate string 
