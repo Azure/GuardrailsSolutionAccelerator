@@ -103,10 +103,12 @@ Verify-PBMMPolicy -ControlName $CtrName5 -ItemName "PBMMPolicy Compliance" `
 Verify-AllowedLocationPolicy -ControlName $CtrName5 -ItemName "AllowedLocationPolicy" -PolicyID $AllowedLocationPolicyId -LogType $LogType -WorkSpaceID $WorkSpaceID -workspaceKey $workspaceKey
 #Guardrail module 8
 "Get-SubnetComplianceInformation" 
-Get-SubnetComplianceInformation -ControlName $CtrName8 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey
+Get-SubnetComplianceInformation -ControlName $CtrName8 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey `
+-ReportTime $ReportTime
 #Guardrail module 9
 "Get-VnetComplianceInformation"
-Get-VnetComplianceInformation -ControlName $CtrName9 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey 
+Get-VnetComplianceInformation -ControlName $CtrName9 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey  `
+-ReportTime $ReportTime
 #Guradrail modul 10
 "Check-CBSSensors"
 Check-CBSSensors -SubscriptionName $CBSSubscriptionName  -TenantID $TenantID -ControlName $CtrName10 `

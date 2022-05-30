@@ -1,0 +1,10 @@
+[
+  {
+    "Vnet": "Vnet1",
+    "Subnet": "Subnet1"
+  },
+  {
+    "Subnet": "Subnet1",
+    "Vnet": "Vnet2"
+  }
+]
