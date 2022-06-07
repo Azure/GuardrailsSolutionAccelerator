@@ -254,7 +254,7 @@ https://docs.microsoft.com/en-us/azure/automation/how-to/region-mappings
     {
         Select-AzSubscription -SubscriptionObject $sub
         $ContactInfo=Get-AzSecurityContact
-        if ($ContactInfo.Email -ne $null -or $ContactInfo.Phone -eq $null)
+        if ($ContactInfo.Email -eq $null -or $ContactInfo.Phone -eq $null)
         {
             $IsCompliant=$false
             $Comments="Subscription $($sub.Name) is missing Contact Information."

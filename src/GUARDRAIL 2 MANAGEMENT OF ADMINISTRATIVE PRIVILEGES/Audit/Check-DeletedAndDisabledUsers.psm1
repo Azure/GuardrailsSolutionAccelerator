@@ -24,6 +24,7 @@ function Check-ADDeletedUsers  {
           DeletedDate = $User.deletedDateTime
           Comments = $Comment1
           ReportTime = $ReportTime
+          ItemName = "ADDeletedUser"
           }
         $deletedUsersArray.add($Customuser)
         }
@@ -51,6 +52,7 @@ function Check-ADDeletedUsers  {
              Enabled = $User.accountEnabled
              Comments = $Comment2
              ReportTime = $ReportTime
+             ItemName = "ADDisabledUsers"
         }
         
         $guestUsersArray.add($Customuser)

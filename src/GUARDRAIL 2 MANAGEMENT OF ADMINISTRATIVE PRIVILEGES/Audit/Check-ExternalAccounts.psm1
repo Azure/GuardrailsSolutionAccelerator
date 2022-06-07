@@ -28,15 +28,16 @@
     $guestUsers = $guestAccountData.value
     forEach ($User in $guestUsers) {
         if($User.userType -eq "Guest") {
-
-             $Customuser = [pscustomobject]@{
-             DisplayName = $User.displayName
-             Mail = $User.mail
-             Type = $User.userType
-             CreatedDate = $User.createdDateTime
-             Enabled = $User.accountEnabled
-             Comments = $Comment2
-             ReportTime = $ReportTime }
+             $Customuser = [pscustomobject] @{
+                DisplayName = $User.displayName
+                Mail = $User.mail
+                Type = $User.userType
+                CreatedDate = $User.createdDateTime
+                Enabled = $User.accountEnabled
+                Comments = $Comment2
+                ReportTime = $ReportTime
+                ItemName= $ItemName 
+            }
             $guestUsersArray.add($Customuser)
         }     
     }      
@@ -49,22 +50,24 @@
     Send-OMSAPIIngestionFile  -customerId $WorkSpaceID -sharedkey $workspaceKey `
                             -body $JSONGuestUsers -logType "GR2ExternalUsers" -TimeStampField Get-Date 
 
-    if ($guestUsersArray.Count -eq 0)
-        {       
-            $IsCompliant= $true
-        }
-    
-        $GuestUserStatus = [PSCustomObject]@{
-            ComplianceStatus= $IsCompliant
-            ControlName = $ControlName
-            Comments= $Comment2
-            ItemName= $ItemName
-            ReportTime = $ReportTime
-        }
-        $JasoGuestdUserStatus=   ConvertTo-Json -inputObject $GuestUserStatus
+    if ($guestUsersArray.Count -eq 0) {
+        
+        $IsCompliant= $true
+        $MitigationCommands = "N/A"
+    }
+    $MitigationCommands = "Remove guest accounts from Azure AD."
+    $GuestUserStatus = [PSCustomObject]@{
+        ComplianceStatus= $IsCompliant
+        ControlName = $ControlName
+        Comments= $Comment2
+        ItemName= $ItemName
+        ReportTime = $ReportTime
+        MitigationCommands = $MitigationCommands
+    }
+    $JasoGuestdUserStatus=   ConvertTo-Json -inputObject $GuestUserStatus
 
-        Send-OMSAPIIngestionFile  -customerId $WorkSpaceID -sharedkey $workspaceKey -body $JasoGuestdUserStatus `
-                                    -logType $LogType -TimeStampField Get-Date 
+    Send-OMSAPIIngestionFile  -customerId $WorkSpaceID -sharedkey $workspaceKey -body $JasoGuestdUserStatus `
+                                -logType $LogType -TimeStampField Get-Date 
 
     }
 

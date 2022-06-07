@@ -40,6 +40,7 @@ function Check-ADDeletedUsers {
             ControlName      = $ControlName
             Comments         = "API Error"
             ItemName         = $ItemName
+            MitigationCommands = "Please verify existance of the user (more likely) or application permissions."
             ReportTime = $ReportTime        
         }
         $JasonDepracteUserStatus = ConvertTo-Json -inputObject $DepracteUserStatus
@@ -55,11 +56,13 @@ function Check-ADDeletedUsers {
                 $UComments =  $UComments + $user.userPrincipalName + "  "
             }
         }
-        $Comments = "Total Number of users  " + $DeprecatedUsers.count +" "+ $UComments 
+        $Comments = "Total Number of users  " + $DeprecatedUsers.count +" "+ $UComments
+        $MitigationCommands = "Verify is the users reported are deprecated." 
     }
     else {
         $Comments = $CComments
         $IsCompliant = $true
+        $MitigationCommands = "N/A"
     }
 
     $DepracteUserStatus = [PSCustomObject]@{
@@ -67,6 +70,7 @@ function Check-ADDeletedUsers {
         ControlName      = $ControlName
         Comments         = $Comments
         ItemName         = $ItemName
+        MitigationCommands = $MitigationCommands
         ReportTime = $ReportTime
     }
 

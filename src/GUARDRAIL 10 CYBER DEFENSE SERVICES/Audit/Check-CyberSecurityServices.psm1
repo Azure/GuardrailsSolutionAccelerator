@@ -50,13 +50,16 @@ function Check-CBSSensors {
     else {
         $IsCompliant = $false
         $Object | Add-Member -MemberType NoteProperty -Name Comments -Value $Comment1
+        $MitigationCommands = "Check subscription provided: $SubscriptionName  or check existence of the CBS solution in the provided subscription."
     }
     if ($IsCompliant)
     {
         $object | Add-Member -MemberType NoteProperty -Name ComplianceStatus -Value $IsCompliant
         $object | Add-Member -MemberType NoteProperty -Name Comments -Value "Found resources in these subscriptions: $SubsFound"
+        $MitigationCommands = "N/A."
     }
     $object | Add-Member -MemberType NoteProperty -Name ReportTime -Value $ReportTime
+    $object | Add-Member -MemberType NoteProperty -Name MitigationCommands -Value $MitigationCommands
     $JsonObject = convertTo-Json -inputObject $Object     
     Send-OMSAPIIngestionFile  -customerId $WorkSpaceID `
         -sharedkey $workspaceKey `

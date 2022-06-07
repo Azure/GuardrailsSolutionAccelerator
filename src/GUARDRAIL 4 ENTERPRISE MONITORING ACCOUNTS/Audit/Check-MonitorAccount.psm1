@@ -21,11 +21,12 @@ function Check-MonitorAccountCreation {
   try {
     $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl
     $IsCompliant = $true
-
+    $MitigationCommands = "N/A"
   }
   catch {
     $StatusCode = $_.Exception.Response.StatusCode.value__ 
-    $Comments = "API call returns Error " + $StatusCode + " Please Check if the user exists"
+    $Comments = "API call returns Error " + $StatusCode + " Please Check if the user exists."
+    $MitigationCommands = "Please Check if the user exists."
   }
        
   $Results = [pscustomobject]@{
@@ -34,6 +35,7 @@ function Check-MonitorAccountCreation {
     ItemName    = $ItemName
     Comments    = $Comments
     ReportTime  = $ReportTime
+    MitigationCommands = $MitigationCommands
   }
        
   $Results_Jason = ConvertTo-json -inputObject $Results

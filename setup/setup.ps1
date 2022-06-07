@@ -268,6 +268,7 @@ try {
     $AAId=(Get-AzAutomationAccount -ResourceGroupName $resourcegroup -Name $autoMationAccountName).Identity.PrincipalId
     New-AzRoleAssignment -ObjectId $AAId -RoleDefinitionName Reader -Scope $rootmg.Id
     New-AzRoleAssignment -ObjectId $AAId -RoleDefinitionName "Reader and Data Access" -Scope (Get-AzStorageAccount -ResourceGroupName $resourceGroup -Name $storageaccountName).Id
+    New-AzRoleAssignment -ObjectId $AAID -RoleDefinitionName Reader -Scope /providers/Microsoft.aadiam
 }
 catch {
     "Error assigning root management group permissions."
