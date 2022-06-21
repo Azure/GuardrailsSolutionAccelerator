@@ -3,67 +3,60 @@ function get-tagValue {
         [string] $tagKey,
         [System.Object] $object
     )
-        $tagString=get-tagstring($object)
-        $tagslist=$tagString.split(";")
-        foreach ($tag in $tagslist)
-        {
-            if ($tag.split("=")[0] -eq $tagKey)
-            {
-                return $tag.split("=")[1]
-            }
+    $tagString = get-tagstring($object)
+    $tagslist = $tagString.split(";")
+    foreach ($tag in $tagslist) {
+        if ($tag.split("=")[0] -eq $tagKey) {
+            return $tag.split("=")[1]
         }
-        return ""
     }
-    function get-tagstring ($object)
-    {
-        if ($object.Tag.Count -eq 0)
-        {
-            $tagstring="None"
-        }
-        else
-        {
-            $tagstring=""
-            $tKeys=$object.tag |Select-Object -ExpandProperty keys
-            $tValues= $object.Tag | Select-Object -ExpandProperty values
-            $index=0
-            if ($object.Tag.Count -eq 1)
-            {
-                $tagstring="$tKeys=$tValues"
-            }
-            else 
-            {
-                foreach ($tkey in $tkeys)
-                {
-                    $tagstring+="$tkey=$($tValues[$index]);"
-                    $index++
-                }
-            }
-        }
-        return $tagstring.Trim(";")
+    return ""
+}
+
+function get-tagstring ($object) {
+    if ($object.Tag.Count -eq 0) {
+        $tagstring = "None"
     }
-   #region Functions
-function copy-toBlob  {
+    else {
+        $tagstring = ""
+        $tKeys = $object.tag | Select-Object -ExpandProperty keys
+        $tValues = $object.Tag | Select-Object -ExpandProperty values
+        $index = 0
+        if ($object.Tag.Count -eq 1) {
+            $tagstring = "$tKeys=$tValues"
+        }
+        else {
+            foreach ($tkey in $tkeys) {
+                $tagstring += "$tkey=$($tValues[$index]);"
+                $index++
+            }
+        }
+    }
+    return $tagstring.Trim(";")
+}
+
+function copy-toBlob {
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $FilePath,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $storageaccountName,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $resourcegroup,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $containerName,
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [switch]
         $force
     )
     try {
         $saParams = @{
             ResourceGroupName = $resourcegroup
-            Name = $storageaccountName
+            Name              = $storageaccountName
         }
         $scParams = @{
             Container = $containerName
@@ -73,28 +66,27 @@ function copy-toBlob  {
             Blob = ($FilePath | Split-Path -Leaf)
         }
         if ($force)
-        {Get-AzStorageAccount @saParams | Get-AzStorageContainer @scParams | Set-AzStorageBlobContent @bcParams -Force}
-        else {Get-AzStorageAccount @saParams | Get-AzStorageContainer @scParams | Set-AzStorageBlobContent @bcParams}
+        { Get-AzStorageAccount @saParams | Get-AzStorageContainer @scParams | Set-AzStorageBlobContent @bcParams -Force }
+        else { Get-AzStorageAccount @saParams | Get-AzStorageContainer @scParams | Set-AzStorageBlobContent @bcParams }
     }
-    catch
-    {
+    catch {
         Write-Error $_.Exception.Message
     }
 }
-function get-blobs  {
+function get-blobs {
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $storageaccountName,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $resourcegroup
     )
-    $psModulesContainerName="psmodules"
+    $psModulesContainerName = "psmodules"
     try {
         $saParams = @{
             ResourceGroupName = $resourcegroup
-            Name = $storageaccountName
+            Name              = $storageaccountName
         }
 
         $scParams = @{
@@ -102,78 +94,76 @@ function get-blobs  {
         }
         return (Get-AzStorageAccount @saParams | Get-AzStorageContainer @scParams | Get-AzStorageBlob)
     }
-    catch
-    {
+    catch {
         Write-Error $_.Exception.Message
     }
 }
 
 function read-blob {
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $FilePath,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $storageaccountName,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $resourcegroup,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $containerName,
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [switch]
         $force
     )
-    $Context=(Get-AzStorageAccount -ResourceGroupName $resourcegroup -Name $storageaccountName).Context
+    $Context = (Get-AzStorageAccount -ResourceGroupName $resourcegroup -Name $storageaccountName).Context
     $blobParams = @{
         Blob        = 'modules.json'
         Container   = $containerName
         Destination = $FilePath
         Context     = $Context
-      }
-      Get-AzStorageBlobContent @blobParams
+    }
+    Get-AzStorageBlobContent @blobParams
       
 
 }
-#endregion
 
 Function Add-LogEntry {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory=$True, Position=0)]
-        [ValidateSet("Critical","Error","Warning","Information","Debug")]
+        [Parameter(Mandatory = $True, Position = 0)]
+        [ValidateSet("Critical", "Error", "Warning", "Information", "Debug")]
         [string]
         $severity,
 
         # message details (string)
-        [Parameter(Mandatory=$true, Position=1)]
+        [Parameter(Mandatory = $true, Position = 1)]
         [string]
         $message,
 
         # module name
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [string]
         $moduleName = (Split-Path -Path $MyInvocation.ScriptName -Leaf),
 
         # additional values in hashtable
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [hashtable]
         $additionalValues = @{},
 
         # exception log type - this is the Log Analytics table name
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [string]
         $exceptionLogTable = "GuardrailsComplianceException",
 
         # guardrails exception workspace GUID
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $workspaceGuid,
 
         # guardrails exception workspace shared key
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $workspaceKey
     )
@@ -186,6 +176,8 @@ Function Add-LogEntry {
         -TimeStampField Get-Date 
 
 }
+
+# endregion
    
 # SIG # Begin signature block
 # MIInvQYJKoZIhvcNAQcCoIInrjCCJ6oCAQExDzANBglghkgBZQMEAgEFADB5Bgor

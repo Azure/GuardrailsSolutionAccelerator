@@ -602,7 +602,7 @@ resource module13 'modules' ={
     properties: {
       contentLink: {
         uri: '${CustomModulesBaseURL}/Get-Tags.zip'
-        version: '1.0.0'
+        version: '1.1.0'
       }
     }
   }
