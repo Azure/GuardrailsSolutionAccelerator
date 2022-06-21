@@ -10,6 +10,8 @@ $ReportTime=(get-date).tostring("dd-MM-yyyy-hh:mm:ss")
 $StorageAccountName=Get-AutomationVariable -Name "StorageAccountName" 
 $Locale=Get-AutomationVariable -Name "GuardRailsLocale" 
 
+Add-LogEntry 'Information' "Starting execution of main runbook" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+
 # Connects to Azure using the Automation Account's managed identity
 try {
     Connect-AzAccount -Identity -ErrorAction Stop
