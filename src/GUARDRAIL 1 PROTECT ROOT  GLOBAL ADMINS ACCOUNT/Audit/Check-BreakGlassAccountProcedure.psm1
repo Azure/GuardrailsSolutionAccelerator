@@ -34,24 +34,6 @@ function Check-ProcedureDocument {
         throw "Error: Failed to run 'Connect-AzAccount' with error: $_"
     }
 
-  $StorageAccountContext = $StorageAccount.Context
-  try {
-      $blobs=Get-AzStorageBlob -Container $ContainerName -Context $StorageAccountContext
-      if (($blobs | Where-Object {$_.Name -eq $DocumentName}) -ne $null) 
-      { 
-          $IsCompliant = $True
-          $Comments = $msgTable.procedureFileFound -f $DocumentName, $Containername, $StorageAccountName 
-      }
-      else
-      {
-          $Comments = $msgTable.procedureFileNotFound -f $ItemName, $DocumentName
-      }
-  }
-  catch
-  {
-      Write-error "error reading file from storage."
-  }
-
     $StorageAccount = Get-Azstorageaccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName
 
     $StorageAccountContext = $StorageAccount.Context
@@ -60,10 +42,10 @@ function Check-ProcedureDocument {
 
         If ($blobs) {
             $IsCompliant = $True
-            $Comments = "File $DocumentName found in Container $Containername on $StorageAccountName Storage account."
+            $Comments = $msgTable.procedureFileFound -f $DocumentName, $Containername, $StorageAccountName 
         }
         else {
-            $Comments = "Coudnt find index for " + $ItemName + ", please create upload a file with a name " + $DocumentName + " to confirm you have completed the Item in the control "
+            $Comments = $msgTable.procedureFileNotFound -f $ItemName, $DocumentName
         }
     }
     catch {
