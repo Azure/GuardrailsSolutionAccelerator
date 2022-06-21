@@ -57,20 +57,20 @@ function Get-BreakGlassAccounts {
   }
     
   try {
-    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $FirstBreakGlassAcct.apiUrl -Method Get
+    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $FirstBreakGlassAcct.apiUrl -Method Get -StatusCodeVariable statusCode
    
     if ($Data.userType -eq "Member") {
       $FirstBGAcctExist = $true
     } 
-    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $SecondBreakGlassAcct.apiUrl -Method Get
+    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $SecondBreakGlassAcct.apiUrl -Method Get -StatusCodeVariable statusCode
     
     if ($Data.userType -eq "Member") {
       $SecondBGAcctExist = $true
     } 
   }
   catch {
-    $Statuscode = $_.exception.message
-
+    Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+    Write-Error "Error: Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_"
   }
   $IsCompliant = $FirstBGAcctExist -and $SecondBGAcctExist
 

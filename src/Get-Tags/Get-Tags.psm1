@@ -138,6 +138,55 @@ function read-blob {
 
 }
 #endregion
+
+Function Add-LogEntry {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$True, Position=0)]
+        [ValidateSet("Critical","Error","Warning","Information","Debug")]
+        [string]
+        $severity,
+
+        # message details (string)
+        [Parameter(Mandatory=$true, Position=1)]
+        [string]
+        $message,
+
+        # module name
+        [Parameter(Mandatory=$false)]
+        [string]
+        $moduleName = (Split-Path -Path $MyInvocation.ScriptName -Leaf),
+
+        # additional values in hashtable
+        [Parameter(Mandatory=$false)]
+        [hashtable]
+        $additionalValues = @{},
+
+        # exception log type - this is the Log Analytics table name
+        [Parameter(Mandatory=$false)]
+        [string]
+        $exceptionLogTable = "GuardrailsComplianceException",
+
+        # guardrails exception workspace GUID
+        [Parameter(Mandatory=$true)]
+        [string]
+        $workspaceGuid,
+
+        # guardrails exception workspace shared key
+        [Parameter(Mandatory=$true)]
+        [string]
+        $workspaceKey
+    )
+
+    # log event to Log Analytics workspace by REST API via the OMSIngestionAPI community PS module
+    Send-OMSAPIIngestionFile  -customerId $workspaceGuid `
+        -sharedkey $workspaceKey `
+        -body $message `
+        -logType $exceptionLogTable `
+        -TimeStampField Get-Date 
+
+}
+   
 # SIG # Begin signature block
 # MIInvQYJKoZIhvcNAQcCoIInrjCCJ6oCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG

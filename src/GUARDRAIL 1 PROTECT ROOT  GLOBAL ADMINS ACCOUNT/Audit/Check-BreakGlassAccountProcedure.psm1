@@ -21,13 +21,18 @@ function Check-ProcedureDocument {
         [Parameter(Mandatory=$true)]
         [string]
         $ReportTime
-        )
+    )
 
-  [bool] $IsCompliant= $false
-  [string] $Comments = $null
- Connect-AzAccount -Identity -Subscription  $SubscriptionID
+    [bool] $IsCompliant = $false
+    [string] $Comments = $null
 
-  $StorageAccount= Get-Azstorageaccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName
+    try {
+        Connect-AzAccount -Identity -Subscription  $SubscriptionID -ErrorAction Stop
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to run 'Connect-AzAccount' with error: $_"
+        throw "Error: Failed to run 'Connect-AzAccount' with error: $_"
+    }
 
   $StorageAccountContext = $StorageAccount.Context
   try {
@@ -47,16 +52,35 @@ function Check-ProcedureDocument {
       Write-error "error reading file from storage."
   }
 
-  $PsObject = [PSCustomObject]@{
-        ComplianceStatus= $IsCompliant
-        ControlName = $ControlName
-        ItemName = $ItemName
-        DocumentName = $DocumentName
-        Comments = $Comments
-        ReportTime = $ReportTime
-}
-  $JsonObject= convertTo-Json -inputObject $PsObject 
-            Send-OMSAPIIngestionFile -customerId $WorkSpaceID  -sharedkey $workspaceKey -body $JsonObject -logType $LogType -TimeStampField Get-Date 
+    $StorageAccount = Get-Azstorageaccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName
+
+    $StorageAccountContext = $StorageAccount.Context
+    try {
+        $Blobs = Get-AzStorageBlob -Container $ContainerName -Context $StorageAccountContext -Blob $DocumentName
+
+        If ($blobs) {
+            $IsCompliant = $True
+            $Comments = "File $DocumentName found in Container $Containername on $StorageAccountName Storage account."
+        }
+        else {
+            $Comments = "Coudnt find index for " + $ItemName + ", please create upload a file with a name " + $DocumentName + " to confirm you have completed the Item in the control "
+        }
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to query storage account '$storageAccountName', container '$containerName', for blobs named '$documentName'. Error message: $_"
+        Write-Error "Error: Failed to query storage account '$storageAccountName', container '$containerName', for blobs named '$documentName'. Error message: $_"
+    }
+
+    $PsObject = [PSCustomObject]@{
+        ComplianceStatus = $IsCompliant
+        ControlName      = $ControlName
+        ItemName         = $ItemName
+        DocumentName     = $DocumentName
+        Comments         = $Comments
+        ReportTime       = $ReportTime
+    }
+    $JsonObject = convertTo-Json -inputObject $PsObject 
+    Send-OMSAPIIngestionFile -customerId $WorkSpaceID  -sharedkey $workspaceKey -body $JsonObject -logType $LogType -TimeStampField Get-Date 
 }
 
 # SIG # Begin signature block
