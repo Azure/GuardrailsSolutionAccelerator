@@ -41,13 +41,13 @@ function Get-ADLicenseType {
     $apiUrl = "https://graph.microsoft.com/v1.0/subscribedSkus"
 
     try {
-        $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl -Method Get
+        $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl -Method Get -ErrorAction Stop
     }
     catch {
         Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
         Write-Error "Error: Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_"
     }
-    
+
     $subscribedSkus = $Data.Value
     $servicePlans=  $subscribedSkus.servicePlans
     #https://docs.microsoft.com/en-us/azure/active-directory/enterprise-users/licensing-service-plan-reference

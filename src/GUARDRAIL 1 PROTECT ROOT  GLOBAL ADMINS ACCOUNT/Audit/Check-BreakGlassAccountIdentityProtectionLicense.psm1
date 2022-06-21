@@ -61,7 +61,7 @@ function Get-BreakGlassAccountLicense {
         $apiUrl = $("https://graph.microsoft.com/beta/users/" + $BGAccount.UserPrincipalName)
 
         try {
-            $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl -Method Get
+            $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl -Method Get -ErrorAction Stop
         }
         catch {
             Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
@@ -72,7 +72,7 @@ function Get-BreakGlassAccountLicense {
         $apiUrl = $("https://graph.microsoft.com/beta/users/" + $BGAccount.ID + "/licenseDetails")
 
         try {
-            $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl -Method Get
+            $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl -Method Get -ErrorAction Stop
         }
         catch {
             Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey

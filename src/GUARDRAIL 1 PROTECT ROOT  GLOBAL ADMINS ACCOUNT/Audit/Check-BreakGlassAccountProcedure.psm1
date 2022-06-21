@@ -56,7 +56,7 @@ function Check-ProcedureDocument {
 
     $StorageAccountContext = $StorageAccount.Context
     try {
-        $Blobs = Get-AzStorageBlob -Container $ContainerName -Context $StorageAccountContext -Blob $DocumentName
+        $Blobs = Get-AzStorageBlob -Container $ContainerName -Context $StorageAccountContext -Blob $DocumentName -ErrorAction Stop
 
         If ($blobs) {
             $IsCompliant = $True
@@ -67,7 +67,7 @@ function Check-ProcedureDocument {
         }
     }
     catch {
-        Add-LogEntry 'Error' "Failed to query storage account '$storageAccountName', container '$containerName', for blobs named '$documentName'. Error message: $_"
+        Add-LogEntry 'Error' "Failed to query storage account '$storageAccountName', container '$containerName', for blobs named '$documentName'. Error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
         Write-Error "Error: Failed to query storage account '$storageAccountName', container '$containerName', for blobs named '$documentName'. Error message: $_"
     }
 
