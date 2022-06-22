@@ -22,7 +22,7 @@ param (
         $skipDeployment,
         # alternate custom powershell modules URL -- use for module development/testing
         [Parameter(mandatory=$false)]
-        [URL]
+        [uri]
         $alternatePSModulesURL
     )
 #region Configuration and initialization
