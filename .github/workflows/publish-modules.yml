@@ -24,7 +24,8 @@ jobs:
         shell: pwsh
       - name: commit changes
         run: |
+          git branch
           git config --global user.name 'Matthew Bratschun'
           git config --global user.email 'mbratschun@microsoft.com'
           git commit --amend -m 'zipped modules'
-          git push --force
+          git push
