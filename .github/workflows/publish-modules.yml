@@ -1,0 +1,14 @@
+name: zip powershell modules and publish to psmodules directory
+on: 
+  push:
+    branches:
+      - "mbratschun-exception-handling"
+jobs:
+  build: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: check ou
+        uses: actions/checkout@v2
+      - run: |
+          ./update-psmodulezips.ps1
+        shell: pwsh
