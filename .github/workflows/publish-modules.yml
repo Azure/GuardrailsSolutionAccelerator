@@ -19,6 +19,11 @@ jobs:
 
               $destPath = "./psmodules/$($moduleManifest.BaseName).zip"
               Write-Host "destination path: $destPath"
-              Compress-Archive -Path @($moduleManifest.FullName,$moduleCodeFile.FullName) -DestinationPath $destPath -Update -WhatIf
+              Compress-Archive -Path $moduleManifest.FullName,$moduleCodeFile.FullName -DestinationPath $destPath -Update
           }
         shell: pwsh
+      - name: commit changes
+        run: |
+          git config --global user.name 'Matthew Bratschun'
+          git config --global user.email 'mbratschun@microsoft.com'
+          git commit --amend -m 'zipped modules'
