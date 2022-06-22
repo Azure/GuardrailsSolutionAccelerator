@@ -192,7 +192,7 @@ try {
     -TemplateParameterFile .\parameters.json -TemplateFile .\guardrails.bicep -WarningAction SilentlyContinue 
 }
 catch {
-    Write-error "Error deploying solution to Azure."
+    Write-error "Error deploying solution to Azure. $_"
 }
 #endregion
 #Add current user as a Keyvault administrator (for setup)
