@@ -86,5 +86,3 @@ foreach ($module in $modules)
     Write-host $module.Script
     $NewScriptBlock.Invoke()
 }
-break
-
