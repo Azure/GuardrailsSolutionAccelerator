@@ -10,5 +10,5 @@ jobs:
       - name: check ou
         uses: actions/checkout@v2
       - run: |
-          ./update-psmodulezips.ps1
+          ./.github/update-psmodulezips.ps1
         shell: pwsh
