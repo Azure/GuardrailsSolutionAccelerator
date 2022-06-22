@@ -15,6 +15,10 @@ jobs:
           ForEach ($moduleManifest in $moduleManifests) {
               $moduleCodeFile = Get-Item -Path $moduleManifest.FullName.replace('psd1','psm1')
               
-              Compress-Archive -Path $moduleManifest.FullName,$moduleCodeFile.FullName -DestinationPath ./psmodules/($moduleManifest.BaseName).zip -Update
+              Write-Host "module code file name: $($moduleCodeFile.FullName)"
+
+              $destPath = "./psmodules/$($moduleManifest.BaseName).zip"
+              Write-Host "destination path: $destPath"
+              Compress-Archive -Path @($moduleManifest.FullName,$moduleCodeFile.FullName) -DestinationPath $destPath -Update -WhatIf
           }
         shell: pwsh
