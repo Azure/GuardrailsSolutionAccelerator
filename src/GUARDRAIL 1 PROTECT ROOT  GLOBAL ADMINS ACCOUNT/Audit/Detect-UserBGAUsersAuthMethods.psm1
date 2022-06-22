@@ -28,6 +28,7 @@ function Get-UserAuthenticationMethod {
         [string]
         $ReportTime
    )
+
    $IsCompliant = $true
    $Comments=$null
    
@@ -38,13 +39,27 @@ function Get-UserAuthenticationMethod {
         $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl
         $authenticationmethods =  $Data.value
 
-        foreach($authmeth in $authenticationmethods){
-           if( $($authmeth.'@odata.type') -eq "#microsoft.graph.phoneAuthenticationMethod" ){
-            $IsCompliant= $IsCompliant -and $false
-            $Comments = $Comments +" "+ $BGAcct + " Authentication Methods " + $($authmeth.'@odata.type')+ "  "
-           }
-        } 
+        # To check if MFA is setup for a user, we're looking for either :
+        #    #microsoft.graph.microsoftAuthenticatorAuthenticationMethod or
+        #    #microsoft.graph.phoneAuthenticationMethod
+        Write-Host $authenticationmethods
+        $mfaEnabled = $false
+
+        foreach ($authmeth in $authenticationmethods) {
+           if (($($authmeth.'@odata.type') -eq "#microsoft.graph.phoneAuthenticationMethod") -or `
+                ($($authmeth.'@odata.type') -eq "#microsoft.graph.microsoftAuthenticatorAuthenticationMethod")) {
+                $mfaEnabled = $true
+            }
+        }
+        # MFA is disabled for this user, add a comment
+        if (!$mfaEnabled) {
+            $Comments = $Comments + " MFA Authentication is not enabled for " + $BGAcct
+        }
+
+        # This is the compliance status of the current user
+        $isCompliant = $isCompliant -and $mfaEnabled
     }
+
     $PsObject = [PSCustomObject]@{
         ComplianceStatus= $IsCompliant
         ControlName = $ControlName
