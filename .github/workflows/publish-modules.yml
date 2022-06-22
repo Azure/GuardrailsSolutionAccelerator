@@ -10,16 +10,23 @@ jobs:
       - name: check ou
         uses: actions/checkout@v2
       - run: |
+          $previousCommitHash = git log -2 --format=format:"%H"
+          $filesChangedInLastCommit = git diff-tree --no-commit-id --name-only -r $previousCommitHash | ForEach-Object {
+            (Join-Path $pwd -childPath $_).ToLower()
+          }
+
           $moduleManifests = Get-ChildItem -path ./src -Recurse -Include *.psd1
 
           ForEach ($moduleManifest in $moduleManifests) {
               $moduleCodeFile = Get-Item -Path $moduleManifest.FullName.replace('psd1','psm1')
               
-              Write-Host "module code file name: $($moduleCodeFile.FullName)"
+              If ($filesChangedInLastCommit -contains $moduleManifest.FullName.toLower() -or $filesChangedInLastCommit -icontains $moduleCodeFile.FullName.ToLower()) {
+                Write-Host "module code file name: $($moduleCodeFile.FullName)"
 
-              $destPath = "./psmodules/$($moduleManifest.BaseName).zip"
-              Write-Host "destination path: $destPath"
-              Compress-Archive -Path $moduleManifest.FullName,$moduleCodeFile.FullName -DestinationPath $destPath -Update
+                $destPath = "./psmodules/$($moduleManifest.BaseName).zip"
+                Write-Host "destination path: $destPath"
+                Compress-Archive -Path $moduleManifest.FullName,$moduleCodeFile.FullName -DestinationPath $destPath -Update
+              }
           }
         shell: pwsh
       - name: commit changes
