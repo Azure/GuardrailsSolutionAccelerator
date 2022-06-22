@@ -178,6 +178,17 @@ $parameterTemplate | out-file .\parameters.json -Force
 
 #region bicep deployment
 
+# create a parameter object for dynamically passing a CustomModulesBaseURL value to bicep
+$templateParameterObject = @{}
+$paramFileContent = Get-Content .\parameters.json | ConvertFrom-Json -Depth 20
+$paramFileContent.parameters | Get-Member -MemberType Properties | ForEach-Object {
+    $templateParameterObject += @{ $_.name = $paramFileContent.parameters.$($_.name).value }
+}
+
+If (![string]::IsNullOrEmpty($alternatePSModulesURL)) {
+    $templateParameterObject += @{CustomModulesBaseURL= $alternatePSModulesURL}
+}
+
 Write-Verbose "Creating $resourceGroup in $region location."
 $tags=get-content ./tags.json | convertfrom-json
 $tagstable=@{}
