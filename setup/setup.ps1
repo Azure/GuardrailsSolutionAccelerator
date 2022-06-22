@@ -186,7 +186,7 @@ $paramFileContent.parameters | Get-Member -MemberType Properties | ForEach-Objec
 }
 
 If (![string]::IsNullOrEmpty($alternatePSModulesURL)) {
-    $templateParameterObject.parameters | Add-Member @{CustomModulesBaseURL=@{value = $alternatePSModulesURL}}
+    $templateParameterObject += @{CustomModulesBaseURL= $alternatePSModulesURL}
 }
 
 Write-Verbose "Creating $resourceGroup in $region location."
