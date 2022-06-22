@@ -27,7 +27,6 @@ jobs:
           git branch
           git config --global user.name 'Matthew Bratschun'
           git config --global user.email 'mbratschun@microsoft.com'
-          git commit --amend -m 'zipped modules'
 
           git add -A
           git commit -am "zipped modules from: $(git log -1 --pretty=%B)"
