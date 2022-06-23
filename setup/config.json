@@ -12,5 +12,6 @@
   "DepartmentNumber": "",
   "CBSSubscriptionName": "",
   "SecurityLAWResourceId":"",
-  "HealthLAWResourceId":""
+  "HealthLAWResourceId":"",
+  "Locale":""
 }

@@ -17,6 +17,7 @@ param SecurityLAWResourceId string
 param HealthLAWResourceId string
 param CustomModulesBaseURL string = 'https://github.com/Azure/GuardrailsSolutionAccelerator/raw/main/psmodules'
 param DeployTelemetry bool = true
+param Locale string = 'EN'
 param version string
 param releaseDate string 
 var containername = 'guardrailsstorage'
@@ -754,14 +755,14 @@ resource module14 'modules' ={
     'properties': {
       'isEncrypted': false
       'value': '"${SecurityLAWResourceId}"'
+    }
   }
-  }
-  resource variable14 'variables' = {
+  resource variable13 'variables' = {
     name: 'HealthLAWResourceId'
     'properties': {
       'isEncrypted': false
       'value': '"${HealthLAWResourceId}"'
-  }
+    }
   }
 }
 
@@ -853,7 +854,7 @@ resource guardrailsStorage 'Microsoft.Storage/storageAccounts@2021-06-01' = {
       }
     }
     resource container2 'containers'={
-      name: 'psmodules'
+      name: 'configuration'
       properties: {
         immutableStorageWithVersioning: {
             enabled: false
@@ -865,5 +866,3 @@ resource guardrailsStorage 'Microsoft.Storage/storageAccounts@2021-06-01' = {
     }
   }
 }
-
-

@@ -49,6 +49,9 @@
     },
     "releasedate": {
       "value": "%releasedate%"
+    },
+    "Locale": {
+      "value": "%Locale%"
     }
   }
 }
