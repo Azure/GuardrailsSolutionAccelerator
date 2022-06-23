@@ -15,7 +15,7 @@ jobs:
             (Join-Path $pwd -childPath $_).ToLower()
           }
 
-          Write-Verbose "Files changed in last commit: `n $filesChangedInLastCommit"
+          Write-Host "Files changed in last commit: `n $filesChangedInLastCommit"
 
           $moduleManifests = Get-ChildItem -path ./src -Recurse -Include *.psd1
 
@@ -30,7 +30,7 @@ jobs:
                 Compress-Archive -Path $moduleManifest.FullName,$moduleCodeFile.FullName -DestinationPath $destPath -Update
               }
               Else {
-                  Write-Verbose "Neither the manifest or script file for module '$($moduleManifest.BaseName)' was changed, skipping zipping..."
+                  Write-Host "Neither the manifest or script file for module '$($moduleManifest.BaseName)' was changed, skipping zipping..."
               }
           }
         shell: pwsh
