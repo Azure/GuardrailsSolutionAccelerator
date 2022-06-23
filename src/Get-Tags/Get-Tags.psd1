@@ -12,11 +12,7 @@
 RootModule = '.\get-tags.psm1'
 
 # Version number of this module.
-<<<<<<< HEAD
-ModuleVersion = '1.1'
-=======
-ModuleVersion = '1.1.0'
->>>>>>> 0b97e81 (increment get-tags module version to 1.1.0)
+ModuleVersion = '1.1.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()

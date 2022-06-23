@@ -168,10 +168,18 @@ Function Add-LogEntry {
         $workspaceKey
     )
 
+    # build log entry object, convert to json
+    $entryHash = @{
+        "message" = $message
+        "moduleName" = $moduleName
+        "severity" = $severity
+    } + $additionalValues
+    $entryJson = ConvertTo-Json -inputObject $entryHash
+
     # log event to Log Analytics workspace by REST API via the OMSIngestionAPI community PS module
     Send-OMSAPIIngestionFile  -customerId $workspaceGuid `
         -sharedkey $workspaceKey `
-        -body $message `
+        -body $entryJson `
         -logType $exceptionLogTable `
         -TimeStampField Get-Date 
 
