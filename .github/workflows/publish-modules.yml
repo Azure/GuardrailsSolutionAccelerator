@@ -18,11 +18,11 @@ jobs:
           Write-Host "Previous commit: $previousCommitHash"
 
           $filesChangedInLastCommit = git diff-tree --no-commit-id --name-only -r $previousCommitHash | ForEach-Object {
-            Write-Host $_
             (Join-Path $pwd -childPath $_).ToLower()
           }
 
           Write-Host "'$($filesChangedInLastCommit.count)' files changed in last commit: `n $filesChangedInLastCommit"
+          git diff-tree --no-commit-id --name-only -r $previousCommitHash
 
           $moduleManifests = Get-ChildItem -path ./src -Recurse -Include *.psd1
 
