@@ -9,6 +9,8 @@ jobs:
     steps: 
       - name: check ou
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
       - run: |
           Write-Host "Executing powershell script in '$pwd'"
           
@@ -16,11 +18,10 @@ jobs:
           Write-Host "Previous commit: $previousCommitHash"
 
           $filesChangedInLastCommit = git diff-tree --no-commit-id --name-only -r $previousCommitHash | ForEach-Object {
-            Write-Host $_
             (Join-Path $pwd -childPath $_).ToLower()
           }
 
-          Write-Host "Files changed in last commit: `n $filesChangedInLastCommit"
+          Write-Host "'$($filesChangedInLastCommit.count)' files changed in last commit: `n $filesChangedInLastCommit"
           git diff-tree --no-commit-id --name-only -r $previousCommitHash
 
           $moduleManifests = Get-ChildItem -path ./src -Recurse -Include *.psd1
