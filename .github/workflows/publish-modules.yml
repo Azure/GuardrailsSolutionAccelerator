@@ -10,7 +10,11 @@ jobs:
       - name: check ou
         uses: actions/checkout@v2
       - run: |
+          Write-Host "Executing powershell script in '$pwd'"
+          
           $previousCommitHash = git log -2 --format=format:"%H"
+          Write-Host "Previous commit: $previousCommitHash"
+
           $filesChangedInLastCommit = git diff-tree --no-commit-id --name-only -r $previousCommitHash | ForEach-Object {
             (Join-Path $pwd -childPath $_).ToLower()
           }
