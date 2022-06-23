@@ -22,7 +22,6 @@ jobs:
           }
 
           Write-Host "'$($filesChangedInLastCommit.count)' files changed in last commit: `n $filesChangedInLastCommit"
-          git diff-tree --no-commit-id --name-only -r $previousCommitHash
 
           $moduleManifests = Get-ChildItem -path ./src -Recurse -Include *.psd1
 
