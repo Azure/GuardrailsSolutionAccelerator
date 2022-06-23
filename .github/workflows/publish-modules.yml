@@ -18,6 +18,7 @@ jobs:
           Write-Host "Previous commit: $previousCommitHash"
 
           $filesChangedInLastCommit = git diff-tree --no-commit-id --name-only -r $previousCommitHash | ForEach-Object {
+            Write-Host $_
             (Join-Path $pwd -childPath $_).ToLower()
           }
 
