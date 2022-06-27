@@ -30,10 +30,9 @@ jobs:
               $moduleCodeFile = Get-Item -Path $moduleManifest.FullName.replace('psd1','psm1')
               
               If ($filesChangedInLastCommit -icontains $moduleManifest.FullName.toLower() -or $filesChangedInLastCommit -icontains $moduleCodeFile.FullName.ToLower()) {
-                Write-Host "module code file name: $($moduleCodeFile.FullName)"
+                Write-Host "Module '$($moduleManifest.BaseName)' was changed, zipping module files..."
 
                 $destPath = "./psmodules/$($moduleManifest.BaseName).zip"
-                Write-Host "destination path: $destPath"
                 Compress-Archive -Path $moduleManifest.FullName,$moduleCodeFile.FullName -DestinationPath $destPath -Update
               }
               Else {

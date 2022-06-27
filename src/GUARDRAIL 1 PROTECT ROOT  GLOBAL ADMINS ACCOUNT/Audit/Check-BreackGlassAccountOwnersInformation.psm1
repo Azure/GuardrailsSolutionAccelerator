@@ -55,12 +55,12 @@ function Get-BreakGlassOwnerinformation {
         
         $apiUrl = $("https://graph.microsoft.com/beta/users/" + $BGOwner.UserPrincipalName + "/manager")
         try {
-            $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl -StatusCodeVariable statusCode -ErrorAction Stop
+            $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl -ErrorAction Stop
             $BGOwner.ComplianceStatus = $true
             $BGOwner.ComplianceComments = $msgTable.bgAccountHasManager -f $BGOwner.UserPrincipalName
         }
         catch {
-            If ($statusCode -eq '404') {
+            If ($_.exception.response.statuscode.value__ -eq '404') {
                 $BGOwner.ComplianceStatus = $false
                 $BGOwner.ComplianceComments = "BG Account doesn't has a Manager"
             }

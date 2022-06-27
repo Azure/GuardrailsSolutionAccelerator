@@ -57,12 +57,12 @@ function Get-BreakGlassAccounts {
   }
     
   try {
-    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $FirstBreakGlassAcct.apiUrl -Method Get -StatusCodeVariable statusCode
+    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $FirstBreakGlassAcct.apiUrl -Method Get
    
     if ($Data.userType -eq "Member") {
       $FirstBGAcctExist = $true
     } 
-    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $SecondBreakGlassAcct.apiUrl -Method Get -StatusCodeVariable statusCode
+    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $SecondBreakGlassAcct.apiUrl -Method Get
     
     if ($Data.userType -eq "Member") {
       $SecondBGAcctExist = $true
