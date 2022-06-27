@@ -4,12 +4,16 @@
 param (
     [Parameter(Mandatory=$true)]
     [string]
-    $configFilePath
+    $configFilePath,
+
+    # Parameter help description
+    [Parameter(Mandatory=$false)]
+    [string]
+    $baseContentUri='https://raw.githubusercontent.com/Azure/GuardrailsSolutionAccelerator/Final/psmodules'
 )
 $newversion='1.2'
 $newWorkbookVersion='1.2'
 $newReleaseDate='2022-05-06'
-$baseContentUri='https://github.com/Azure/GuardrailsSolutionAccelerator/raw/main/psmodules'
 $tempFolder='/tmp/modules'
 if (!(get-childitem $tempFolder)) {
     mkdir $tempFolder
