@@ -17,8 +17,9 @@ jobs:
           $previousCommitHash = git log -2 --format=format:"%H"
           Write-Host "Previous commit: $previousCommitHash"
 
-          $filesChangedInLastCommit = git diff-tree --no-commit-id --name-only -r $previousCommitHash | ForEach-Object {
-            (Join-Path $pwd -childPath $_).ToLower()
+          $filesChangedInLastCommit = @()
+          git diff-tree --no-commit-id --name-only -r $previousCommitHash | ForEach-Object {
+            $filesChangedInLastCommit += (Join-Path $pwd -childPath $_).ToLower()
           }
 
           Write-Host "'$($filesChangedInLastCommit.count)' files changed in last commit: `n $filesChangedInLastCommit"
@@ -28,7 +29,7 @@ jobs:
           ForEach ($moduleManifest in $moduleManifests) {
               $moduleCodeFile = Get-Item -Path $moduleManifest.FullName.replace('psd1','psm1')
               
-              If ($filesChangedInLastCommit -contains $moduleManifest.FullName.toLower() -or $filesChangedInLastCommit -icontains $moduleCodeFile.FullName.ToLower()) {
+              If ($filesChangedInLastCommit -icontains $moduleManifest.FullName.toLower() -or $filesChangedInLastCommit -icontains $moduleCodeFile.FullName.ToLower()) {
                 Write-Host "module code file name: $($moduleCodeFile.FullName)"
 
                 $destPath = "./psmodules/$($moduleManifest.BaseName).zip"
@@ -36,7 +37,7 @@ jobs:
                 Compress-Archive -Path $moduleManifest.FullName,$moduleCodeFile.FullName -DestinationPath $destPath -Update
               }
               Else {
-                  Write-Host "Neither the manifest or script file for module '$($moduleManifest.BaseName)' was changed, skipping zipping..."
+                  Write-Host "Neither the manifest '$($moduleManifest.FullName.toLower())' or script file '$($moduleCodeFile.FullName.ToLower())' for module '$($moduleManifest.BaseName)' was changed, skipping zipping..."
               }
           }
         shell: pwsh
