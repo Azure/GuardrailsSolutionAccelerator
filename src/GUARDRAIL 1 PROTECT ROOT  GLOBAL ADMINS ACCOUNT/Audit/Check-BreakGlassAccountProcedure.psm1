@@ -34,7 +34,17 @@ function Check-ProcedureDocument {
         throw "Error: Failed to run 'Connect-AzAccount' with error: $_"
     }
 
-    $StorageAccount = Get-Azstorageaccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName
+    #$null= select-Azsubscription -SubscriptionID $SubscriptionID
+
+    try {
+        $StorageAccount = Get-Azstorageaccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -ErrorAction Stop
+    }
+    catch {
+        Add-LogEntry 'Error' "Could not find storage account '$storageAccountName' in resoruce group '$resourceGroupName' of `
+            subscription '$subscriptionId'; verify that the storage account exists and that you have permissions to it. Error: $_"
+        Write-Error "Could not find storage account '$storageAccountName' in resoruce group '$resourceGroupName' of `
+        subscription '$subscriptionId'; verify that the storage account exists and that you have permissions to it. Error: $_"
+    }
 
     $StorageAccountContext = $StorageAccount.Context
     try {

@@ -15,7 +15,7 @@ $newversion='1.2'
 $newWorkbookVersion='1.2'
 $newReleaseDate='2022-05-06'
 $tempFolder='/tmp/modules'
-if (!(get-childitem $tempFolder)) {
+if (!(get-childitem $tempFolder -ErrorAction SilentlyContinue)) {
     mkdir $tempFolder
 }
 $modulesFolder="../psmodules"
