@@ -31,6 +31,7 @@ function Get-BreakGlassAccountLicense {
        [string] $ItemName, 
        [string] $WorkSpaceID, 
        [string] $workspaceKey, 
+       [hashtable] $msgTable,
        [string] $LogType,
        [Parameter(Mandatory=$true)]
        [string]
@@ -44,12 +45,12 @@ function Get-BreakGlassAccountLicense {
     $FirstBreakGlassAcct= [PSCustomObject]@{
         UserPrincipalName     = $FirstBreakGlassUPN
         ID = $null
-        LicenseDetails= "NOT ASSIGNED"
+        LicenseDetails= $msgTable.bgLicenseNotAssigned
     }
     $SecondBreakGlassAcct= [PSCustomObject]@{
         UserPrincipalName     = $SecondBreakGlassUPN
         ID = $null
-        LicenseDetails= "NOT ASSIGNED"
+        LicenseDetails= $msgTable.bgLicenseNotAssigned
     }
         $BGAccounts.add( $FirstBreakGlassAcct)
         $BGAccounts.add( $SecondBreakGlassAcct)
@@ -72,11 +73,11 @@ function Get-BreakGlassAccountLicense {
            (($SecondBreakGlassAcct.LicenseDetails -match "EMSPREMIUM") -or ($SecondBreakGlassAcct.LicenseDetails -match "ENTERPRISEPREMIUM"))){
 
             $IsCompliant= $true
-            $Comments= $FirstBreakGlassAcct.UserPrincipalName +" Assigned License = "+  $FirstBreakGlassAcct.LicenseDetails +
-                       $SecondBreakGlassAcct.UserPrincipalName +" Assigned License = "+  $SecondBreakGlassAcct.LicenseDetails 
+            $Comments= $FirstBreakGlassAcct.UserPrincipalName + $msgTable.bgAssignedLicense +  $FirstBreakGlassAcct.LicenseDetails +
+                       $SecondBreakGlassAcct.UserPrincipalName + $msgTable.bgAssignedLicense +  $SecondBreakGlassAcct.LicenseDetails 
    }    else {
-             $Comments= $FirstBreakGlassAcct.UserPrincipalName +" Assigned License = "+  $FirstBreakGlassAcct.LicenseDetails +" & "+
-             $SecondBreakGlassAcct.UserPrincipalName +" Assigned License = "+  $SecondBreakGlassAcct.LicenseDetails 
+             $Comments= $FirstBreakGlassAcct.UserPrincipalName + $msgTable.bgAssignedLicense +  $FirstBreakGlassAcct.LicenseDetails +" & "+
+             $SecondBreakGlassAcct.UserPrincipalName + $msgTable.bgAssignedLicense +  $SecondBreakGlassAcct.LicenseDetails 
    }
 
    $PsObject = [PSCustomObject]@{

@@ -18,6 +18,7 @@ function Get-VNetComplianceInformation {
         [Parameter(Mandatory=$false)]
         [string]
         $ExcludedVNets,
+        [hashtable] $msgTable,
         [Parameter(Mandatory=$true)]
         [string]
         $ReportTime,
@@ -51,12 +52,12 @@ foreach ($sub in $subs)
                 if ($Vnet.EnableDdosProtection) 
                 {
                     $ComplianceStatus = $true 
-                    $Comments="DDos Protection Enabled. $($VNet.DdosProtectionPlan.Id)"
+                    $Comments="$($msgTable.ddosEnabled) $($VNet.DdosProtectionPlan.Id)"
                     $MitigationCommands="N/A"
                 }
                 else {
                     $ComplianceStatus = $false
-                    $Comments="DDos Protection not enabled."
+                    $Comments= $msgTable.ddosNotEnabled
                     $MitigationCommands=@"
                     # https://docs.microsoft.com/en-us/azure/ddos-protection/ddos-protection-overview
                     # Selects Subscription
@@ -77,7 +78,7 @@ foreach ($sub in $subs)
                     SubscriptionName  = $sub.Name 
                     ComplianceStatus = $ComplianceStatus
                     Comments = $Comments
-                    ItemName = "VNet DDos configuration"
+                    ItemName = $msgTable.vnetDDosConfig
                     ControlName = $ControlName
                     MitigationCommands=$MitigationCommands
                     ReportTime = $ReportTime

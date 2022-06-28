@@ -20,6 +20,7 @@ function Get-UserAuthenticationMethod {
         [string] $ControlName,
         [string] $WorkSpaceID, 
         [string] $workspaceKey, 
+        [hashtable] $msgTable,
         [string] $LogType,
         [string] $ItemName,
         [string] $FirstBreakGlassEmail,

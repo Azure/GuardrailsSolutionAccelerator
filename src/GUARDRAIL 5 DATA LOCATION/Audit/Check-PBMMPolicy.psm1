@@ -82,6 +82,7 @@ function Verify-PBMMPolicy {
             [string] $WorkSpaceID,
             [string] $workspaceKey,
             [string] $LogType,
+            [hashtable] $msgTable,
             [Parameter(Mandatory=$true)]
             [string]
             $ReportTime,
@@ -96,12 +97,6 @@ function Verify-PBMMPolicy {
     [PSCustomObject] $SubscriptionList = New-Object System.Collections.ArrayList
     [PSCustomObject] $CompliantList = New-Object System.Collections.ArrayList
     [PSCustomObject] $NonCompliantList = New-Object System.Collections.ArrayList
-    [string] $Comment1 = "The Policy or Initiative is not assigned to the "
-    [string] $Comment2 = " is excluded from the scope of the assignment"
-    [string] $Comment3 = "Compliant"
-    [string] $Comment4 = "The Policy or Initiative is not assigned on the Root Management Groups"
-    [string] $Comment5="This Root Management Groups is excluded from the scope of the assignment"
-    [string] $Comment6="PBMM Initiative is not applied."
 
     $gr6RequiredPolicies=@("TransparentDataEncryptionOnSqlDatabasesShouldBeEnabled","DiskEncryptionShouldBeAppliedOnVirtualMachines")
     $gr7RequiredPolicies=@("FunctionAppShouldOnlyBeAccessibleOverHttps","WebApplicationShouldOnlyBeAccessibleOverHttps", "ApiAppShouldOnlyBeAccessibleOverHttps", "OnlySecureConnectionsToYourRedisCacheShouldBeEnabled","SecureTransferToStorageAccountsShouldBeEnabled")
@@ -119,28 +114,28 @@ function Verify-PBMMPolicy {
             foreach ($c in $Children) {
                 Write-Output "Children: $($c.DisplayName)"
                 if ($c.Type -eq "/subscriptions" -and (-not $SubscriptionList.Contains($c)) -and $c.DisplayName -ne $CBSSubscriptionName) {
-                    [string]$type = "subscription"
+                    [string]$type = $msgTable.subscription
                     $SubscriptionList.Add($c)
                     $AssignedPolicyList = Get-AzPolicyAssignment -scope $c.Id -PolicyDefinitionId $PolicyID
                     If ($null -eq $AssignedPolicyList) {
                         $c=new-customObject -Type $c.Type -Id $c.Id -Name $c.Name `
                         -DisplayName $c.DisplayName `
                         -ComplianceStatus $false `
-                        -Comments "$Comment1$type" `
+                        -Comments $($msgTable.policyNotAssigned -f $type) `
                         -ItemName $ItemName `
                         -CtrlName $ControlName -ReportTime $ReportTime
                         $NonCompliantList.add($c)
                         # the lines below create an entry for modules 6 and 7
                         $GR6Object = new-customObject -Type $c.Type -Id $c.Id -Name $c.Name `
                             -DisplayName $c.DisplayName -ComplianceStatus $false `
-                            -Comments $Comment6 `
+                            -Comments $msgTable.pbmmNotApplied `
                             -ItemName $ItemName6 `
                             -CtrlName $CtrName6 -ReportTime $ReportTime
                         $NonCompliantList.add($GR6Object)
                         $GR7Object = new-customObject -Type $c.Type -Id $c.Id -Name $c.Name `
                             -DisplayName $c.DisplayName `
                             -ComplianceStatus $false `
-                            -Comments $Comment6 `
+                            -Comments $msgTable.pbmmNotApplied `
                             -ItemName $ItemName7 `
                             -CtrlName $CtrName7 -ReportTime $ReportTime
                         $NonCompliantList.add($GR7Object)
@@ -149,21 +144,21 @@ function Verify-PBMMPolicy {
                         $c=new-customObject -Type $c.Type -Id $c.Id -Name $c.Name `
                         -DisplayName $c.DisplayName `
                         -ComplianceStatus $false `
-                        -Comments "$Comment1$type" `
+                        -Comments $($msgTable.policyNotAssigned -f $type) `
                         -ItemName $ItemName `
                         -CtrlName $ControlName -ReportTime $ReportTime
                         $NonCompliantList.add($c)  
                         # the lines below create an entry for modules 6 and 7
                         $GR6Object = new-customObject -Type $c.Type -Id $c.Id -Name $c.Name `
                             -DisplayName $c.DisplayName -ComplianceStatus $false `
-                            -Comments $Comment6 `
+                            -Comments $msgTable.pbmmNotApplied `
                             -ItemName $ItemName6 `
                             -CtrlName $CtrName6 -ReportTime $ReportTime
                         $NonCompliantList.add($GR6Object)
                         $GR7Object = new-customObject -Type $c.Type -Id $c.Id -Name $c.Name `
                             -DisplayName $c.DisplayName `
                             -ComplianceStatus $false `
-                            -Comments $Comment6 `
+                            -Comments $msgTable.pbmmNotApplied `
                             -ItemName $ItemName7 `
                             -CtrlName $CtrName7 -ReportTime $ReportTime
                         $NonCompliantList.add($GR7Object)
@@ -173,7 +168,7 @@ function Verify-PBMMPolicy {
                         -DisplayName $c.DisplayName `
                         -ComplianceStatus $true `
                         -CtrlName $ControlName `
-                        -Comments $Comment3 `
+                        -Comments $msgTable.isCompliant `
                         -ItemName $ItemName `
                         -Test $ControlName -ReportTime $ReportTime
                         $CompliantList.add($c) # it has PBMM, fine, but has anything been exempted and is related to GR6 or GR7?
@@ -200,7 +195,7 @@ function Verify-PBMMPolicy {
                     }
                 }
                 elseif ($c.Type -like "*managementGroups*" -and (-not $MGList.Contains($c)) ) {
-                    [string]$type = "Management Groups"
+                    [string]$type = $msgTable.managementGroup
                     $MGList.Add($c)
                     $AssignedPolicyList = Get-AzPolicyAssignment -scope $C.Id -PolicyDefinitionId $PolicyID
                     If ($null -eq $AssignedPolicyList) {
@@ -208,21 +203,21 @@ function Verify-PBMMPolicy {
                         -CtrlName $ControlName `
                         -ComplianceStatus $false `
                         -ItemName $ItemName `
-                        -Comments "$Comment1$type" `
+                        -Comments $($msgTable.policyNotAssigned -f $type) `
                         -ReportTime $ReportTime
                         $NonCompliantList.add($c)
                         # the lines below create an entry for modules 6 and 7
                         $GR6Object=new-customObject -Type $c.Type -Id $c.Id -Name $c.Name `
                         -DisplayName $c.DisplayName `
                         -ComplianceStatus $false `
-                        -Comments $Comment6 `
+                        -Comments $msgTable.pbmmNotApplied `
                         -ItemName $ItemName6 `
                         -CtrlName $CtrName6 -ReportTime $ReportTime
                         $NonCompliantList.add($GR6Object)
                         $GR7Object=new-customObject -Type $c.Type -Id $c.Id -Name $c.Name `
                         -DisplayName $c.DisplayName `
                         -ComplianceStatus $false `
-                        -Comments $Comment6 `
+                        -Comments $msgTable.pbmmNotApplied `
                         -ItemName $ItemName7 `
                         -CtrlName $CtrName7 -ReportTime $ReportTime
                         $NonCompliantList.add($GR7Object)
@@ -232,20 +227,20 @@ function Verify-PBMMPolicy {
                         -CtrlName $ControlName `
                         -ComplianceStatus $false `
                         -ItemName $ItemName `
-                        -Comments "$type$Comment2" `
+                        -Comments $($msgTable.excludedFromScope -f $type) `
                         -ReportTime $ReportTime
                         $NonCompliantList.add($c)
                         # the lines below create an entry for modules 6 and 7
                         $GR6Object=new-customObject -Type $c.Type -Id $c.Id -Name $c.Name `
                         -DisplayName $c.DisplayName `
                         -ComplianceStatus $false `
-                        -Comments $Comment6 `
+                        -Comments $msgTable.pbmmNotApplied `
                         -ItemName $ItemName6 `
                         -CtrlName $CtrName6 -ReportTime $ReportTime
                         $NonCompliantList.add($GR6Object)
                         $GR7Object=new-customObject -Type $c.Type -Id $c.Id -Name $c.Name `
                         -DisplayName $c.DisplayName -ComplianceStatus $false `
-                        -Comments $Comment6 `
+                        -Comments $msgTable.pbmmNotApplied `
                         -ItemName $ItemName7 `
                         -CtrlName $CtrName7 -ReportTime $ReportTime
                         $NonCompliantList.add($GR7Object)
@@ -255,7 +250,7 @@ function Verify-PBMMPolicy {
                         -CtrlName $ControlName `
                         -ComplianceStatus $true `
                         -ItemName $ItemName `
-                        -Comments $Comment3 `
+                        -Comments $msgTable.isCompliant `
                         -ReportTime $ReportTime
                         $CompliantList.add($c)
                         # it has PBMM, fine, but has anything been exempted and is related to GR6 or GR7?
@@ -288,35 +283,35 @@ function Verify-PBMMPolicy {
     If ($null -eq $AssignedPolicyList) {
         Write-Output "RootMG: $($RootMG.DisplayName)"
         $RootMG2=new-customObject -Type $RootMG.Type -Id $RootMG.Id -Name $RootMG.Name -DisplayName $RootMG.DisplayName `
-        -comments $Comment4 -CtrlName $ControlName -ComplianceStatus $false -ItemName $ItemName -ReportTime $ReportTime
+        -comments $msgTable.policyNotAssignedRootMG -CtrlName $ControlName -ComplianceStatus $false -ItemName $ItemName -ReportTime $ReportTime
         $NonCompliantList.add($RootMG2)
         # the lines below create an entry for modules 6 and 7
         $GR6Object=new-customObject -Type $RootMG.Type -Id $RootMG.Id -Name $RootMG.Name -DisplayName $RootMG.DisplayName `
-        -ComplianceStatus $false -Comments $Comment6 -ItemName $ItemName6 `
+        -ComplianceStatus $false -Comments $msgTable.pbmmNotApplied -ItemName $ItemName6 `
         -CtrlName $CtrName6 -ReportTime $ReportTime
         $NonCompliantList.add($GR6Object)
         $GR7Object=new-customObject -Type $RootMG.Type -Id $RootMG.Id -Name $RootMG.Name -DisplayName $RootMG.DisplayName `
-        -ComplianceStatus $false -Comments $Comment6 -ItemName $ItemName7 `
+        -ComplianceStatus $false -Comments $msgTable.pbmmNotApplied -ItemName $ItemName7 `
         -CtrlName $CtrName7 -ReportTime $ReportTime
         $NonCompliantList.add($GR7Object)
     }
     elseif (-not ([string]::IsNullOrEmpty(($AssignedPolicyList.Properties.NotScopesScope)))) {
         $RootMG2=new-customObject -Type $RootMG.Type -Id $RootMG.Id -Name $RootMG.Name -DisplayName $RootMG.DisplayName `
-        -comments $Comment5 -CtrlName $ControlName -ComplianceStatus $false -ItemName $ItemName -ReportTime $ReportTime
+        -comments $msgTable.rootMGExcluded -CtrlName $ControlName -ComplianceStatus $false -ItemName $ItemName -ReportTime $ReportTime
         $NonCompliantList.add($RootMG2)
         # the lines below create an entry for modules 6 and 7
         $GR6Object=new-customObject -Type $RootMG.Type -Id $RootMG.Id -Name $RootMG.Name -DisplayName $RootMG.DisplayName `
-        -ComplianceStatus $false -Comments $Comment6 -ItemName $ItemName6 `
+        -ComplianceStatus $false -Comments $msgTable.pbmmNotApplied -ItemName $ItemName6 `
         -CtrlName $CtrName6 -ReportTime $ReportTime
         $NonCompliantList.add($GR6Object)
         $GR7Object=new-customObject -Type $RootMG.Type -Id $RootMG.Id -Name $RootMG.Name -DisplayName $RootMG.DisplayName `
-        -ComplianceStatus $false -Comments $Comment6 -ItemName $ItemName7 `
+        -ComplianceStatus $false -Comments $msgTable.pbmmNotApplied -ItemName $ItemName7 `
         -CtrlName $CtrName7 -ReportTime $ReportTime
         $NonCompliantList.add($GR7Object)
     }
     else {       
         $RootMG1=new-customObject -Type $RootMG.Type -Id $RootMG.Id -Name $RootMG.Name -DisplayName $RootMG.DisplayName `
-        -comments $Comment3 -CtrlName $ControlName -ComplianceStatus $true -ItemName $ItemName -ReportTime $ReportTime
+        -comments $msgTable.isCompliant -CtrlName $ControlName -ComplianceStatus $true -ItemName $ItemName -ReportTime $ReportTime
         $CompliantList.add($RootMG1) 
         # add detection of exemptions
         $RootMG2=Test-ExemptionExists -object $RootMG -ControlName $CtrName6 -ItemName $ItemName6 `

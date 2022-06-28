@@ -2,6 +2,7 @@ function Check-PrivateMarketPlaceCreation {
         param (
                 [string] $ControlName, `
                 [string] $WorkSpaceID, [string] $workspaceKey, [string] $LogType,
+                [hashtable] $msgTable,
                 [Parameter(Mandatory=$true)]
                 [string]
                 $ReportTime
@@ -10,24 +11,23 @@ function Check-PrivateMarketPlaceCreation {
     
 $IsCompliant=$false 
 $Object = New-Object PSObject
-[String] $Comment1 = "The Private Marketplace has been created."
-[String] $Comment2 = "The Private Marketplace has not been created."
-[String] $PrivateMarketPlace=  Get-AzMarketplacePrivateStore
+$PrivateMarketPlace= Get-AzMarketplacePrivateStore
 
 if($null -eq $PrivateMarketPlace){
         $Object| Add-Member NoteProperty -Name ComplianceStatus  -Value $IsCompliant
-        $Object| Add-Member NoteProperty -Name Comments  -Value $Comment2
-        $MitigationCommands = "Enable Azure Private MarketPlace as per: https://docs.microsoft.com/en-us/marketplace/create-manage-private-azure-marketplace-new"
-}else {       
+        $Object| Add-Member NoteProperty -Name Comments  -Value $msgTable.mktPlaceNotCreated
+        $MitigationCommands = $msgTable.enableMktPlace
+}
+else {       
         $IsCompliant= $true
         $Object| Add-Member NoteProperty -Name ComplianceStatus  -Value $IsCompliant
-        $Object| Add-Member NoteProperty -Name Comments  -Value "$Comment1 - $($PrivateMarketPlace.PrivateStoreId)"
+        $Object| Add-Member NoteProperty -Name Comments  -Value "$($msgTable.mktPlaceCreated) - $($PrivateMarketPlace.PrivateStoreId)"
         $MitigationCommands = ""
 }
 $Object| Add-Member -MemberType NoteProperty -Name ControlName -Value $ControlName -Force
 $Object| Add-Member -MemberType NoteProperty -Name ReportTime -Value $ReportTime -Force
 $Object| Add-Member -MemberType NoteProperty -Name MitigationCommands -Value $MitigationCommands -Force
-$Object| Add-Member -MemberType NoteProperty -Name ItemName -Value "MarketPlaceCreation" -Force
+$Object| Add-Member -MemberType NoteProperty -Name ItemName -Value $msgTable.mktPlaceCreation -Force
 $JsonObject = $Object | convertTo-Json  
 Send-OMSAPIIngestionFile  -customerId $WorkSpaceID `
     -sharedkey $workspaceKey `

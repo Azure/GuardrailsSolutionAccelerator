@@ -5,9 +5,13 @@
     "Control":"Guardrails1",
     "ModuleType": "Builtin",
     "Status": "Enabled",
-    "Script": "Check-ProcedureDocument -StorageAccountName $vars.storageaccountname -ContainerName $vars.container -ResourceGroupName $ResourceGroupName -SubscriptionID $SubID -DocumentName \"Break Glass account Procedure\" -ControlName $CtrName1 -ItemName $vars.ItemName -LogType $LogType -WorkSpaceID  $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime",
+    "Script": "Check-ProcedureDocument -StorageAccountName $vars.storageaccountname -ContainerName $vars.container -ResourceGroupName $ResourceGroupName -SubscriptionID $SubID -DocumentName $vars.DocumentName -ControlName $msgTable.CtrName1 -ItemName $msgTable.bgProcedure -MsgTable $msgTable -LogType $LogType -WorkSpaceID  $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime",
     "variables":
     [
+      {
+        "Name":"storageAccountName",
+        "Value": "StorageAccountName"
+      },
       {
         "Name":"container",
         "Value": "ContainerName"
@@ -24,7 +28,7 @@
   {
     "Control":"Guardrails1",
     "ModuleName": "Get-BreakGlassAccounts",
-    "Script": "Get-BreakGlassAccounts -token $GraphAccessToken  -ControlName $CtrName1 -ItemName \"Break Glass account Creation\" -FirstBreakGlassUPN $vars.FirstBreakGlassUPN -SecondBreakGlassUPN $vars.SecondBreakGlassUPN     -LogType $LogType -WorkSpaceID  $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime ",
+    "Script": "Get-BreakGlassAccounts -token $GraphAccessToken  -ControlName $msgTable.CtrName1 -ItemName $msgTable.bgCreation -FirstBreakGlassUPN $vars.FirstBreakGlassUPN -SecondBreakGlassUPN $vars.SecondBreakGlassUPN -MsgTable $msgTable -LogType $LogType -WorkSpaceID  $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime ",
     "secrets":
     [
       {
@@ -42,14 +46,14 @@
     "Control":"Guardrails1",
     "ModuleType": "Builtin",
     "Status": "Enabled",
-    "Script": "Get-ADLicenseType -Token $GraphAccessToken -ControlName $CtrName1 -ItemName \"AD License Type\" -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime"
+    "Script": "Get-ADLicenseType -Token $GraphAccessToken -ControlName $msgTable.CtrName1 -ItemName $msgTable.adLicense -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime"
   },
   {
     "Control":"Guardrails1",
     "ModuleType": "Builtin",
     "Status": "Enabled",
     "ModuleName": "Get-UserAuthenticationMethod",
-    "Script": "Get-UserAuthenticationMethod -token $GraphAccessToken -ControlName $CtrName1 -ItemName \"MFA Enforcement\" -FirstBreakGlassEmail $vars.FirstBreakGlassUPN -SecondBreakGlassEmail $vars.SecondBreakGlassUPN -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime ",
+    "Script": "Get-UserAuthenticationMethod -token $GraphAccessToken -ControlName $msgTable.CtrName1 -ItemName $msgTable.mfaEnforcement -FirstBreakGlassEmail $vars.FirstBreakGlassUPN -SecondBreakGlassEmail $vars.SecondBreakGlassUPN -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime ",
     "secrets":
      [
       {
@@ -67,7 +71,7 @@
     "ModuleType": "Builtin",
     "Status": "Enabled",
     "ModuleName": "Get-BreakGlassAccountLicense",
-    "Script": "Get-BreakGlassAccountLicense -token $GraphAccessToken -ControlName $CtrName1 -ItemName \"Microsoft 365 E5 Assignment\" -FirstBreakGlassUPN $vars.FirstBreakGlassUPN -SecondBreakGlassUPN $vars.SecondBreakGlassUPN -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime",
+    "Script": "Get-BreakGlassAccountLicense -token $GraphAccessToken -ControlName $msgTable.CtrName1 -ItemName $msgTable.m365Assignment -FirstBreakGlassUPN $vars.FirstBreakGlassUPN -SecondBreakGlassUPN $vars.SecondBreakGlassUPN -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime",
     "secrets":
     [
     {
@@ -85,7 +89,7 @@
     "ModuleType": "Builtin",
     "Status": "Enabled",
     "ModuleName": "Get-BreakGlassOwnerinformation",
-    "Script": "Get-BreakGlassOwnerinformation -token $GraphAccessToken -ControlName $CtrName1 -ItemName \"Break Glass Account Owners Contact information\" -FirstBreakGlassUPNOwner $vars.FirstBreakGlassUPN -SecondBreakGlassUPNOwner $vars.SecondBreakGlassUPN  -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime",
+    "Script": "Get-BreakGlassOwnerinformation -token $GraphAccessToken -ControlName $msgTable.CtrName1 -ItemName $msgTable.bgAccountOwnerContact -FirstBreakGlassUPNOwner $vars.FirstBreakGlassUPN -SecondBreakGlassUPNOwner $vars.SecondBreakGlassUPN -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime",
     "secrets":
     [
     {
@@ -103,21 +107,21 @@
     "ModuleType": "Builtin",
     "Status": "Enabled",
      "ModuleName": "Check-ADDeletedUsers",
-     "Script": "Check-ADDeletedUsers -Token $GraphAccessToken -ControlName $CtrName2 -ItemName \"Remove deprecated accounts\"      -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime"
+     "Script": "Check-ADDeletedUsers -Token $GraphAccessToken -ControlName $msgTable.CtrName2 -ItemName $msgTable.removeDeprecatedAccount -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime"
   },
   {
      "ModuleName": "Check-ExternalUsers",
      "Control":"Guardrails4",
     "ModuleType": "Builtin",
     "Status": "Enabled",
-     "Script": "Check-ExternalUsers -Token $GraphAccessToken -ControlName $CtrName2 -ItemName \"Remove External accounts\" -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime"
+     "Script": "Check-ExternalUsers -Token $GraphAccessToken -ControlName $msgTable.CtrName2 -ItemName $msgTable.removeExternalAccount -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime"
   },
   {
      "ModuleName": "Check-MonitorAccountCreation",
-     "Control":"Guardrails",
+     "Control":"Guardrails4",
      "ModuleType": "Builtin",
      "Status": "Enabled",
-     "Script": "Check-MonitorAccountCreation -Token $GraphAccessToken -DepartmentNumner $vars.departmentnumber -ControlName $CtrName4 -ItemName \"Monitor Account Creation\" -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime",
+     "Script": "Check-MonitorAccountCreation -Token $GraphAccessToken -DepartmentNumber $vars.departmentnumber -ControlName $msgTable.CtrName4 -ItemName $msgTable.monitorAccount -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime",
      "variables":
      [
        {
@@ -128,10 +132,10 @@
   },
   {
      "ModuleName": "Verify-PBMMPolicy",
-     "Control":"Guardrails",
+     "Control":"Guardrails5",
      "ModuleType": "Builtin",
      "Status": "Enabled",
-     "Script": "Verify-PBMMPolicy -ControlName $CtrName5 -ItemName \"PBMMPolicy Compliance\" -CtrName6 $CtrName6 -ItemName6 $ItemName6   -CtrName7 $CtrName7 -ItemName7 $ItemName7 -PolicyID $vars.pbmmpolicyID -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime -CBSSubscriptionName $vars.cbssubscriptionName",
+     "Script": "Verify-PBMMPolicy -ControlName $msgTable.CtrName5 -ItemName $msgTable.pbmmCompliance -CtrName6 $msgTable.CtrName6 -ItemName6 $msgTable.dataAtRest -CtrName7 $msgTable.CtrName7 -ItemName7 $msgTable.dataInTransit -PolicyID $vars.pbmmpolicyID -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime -CBSSubscriptionName $vars.cbssubscriptionName",
      "variables":
      [
        {
@@ -149,7 +153,7 @@
      "Control":"Guardrails5",
      "ModuleType": "Builtin",
      "Status": "Enabled",
-     "Script": "Verify-AllowedLocationPolicy -ControlName $CtrName5 -ItemName \"AllowedLocationPolicy\" -PolicyID $vars.AllowedLocationPolicyId -LogType $LogType -WorkSpaceID $WorkSpaceID -workspaceKey $workspaceKey -ReportTime $ReportTime -CBSSubscriptionName $vars.cbssubscriptionName",
+     "Script": "Verify-AllowedLocationPolicy -ControlName $msgTable.CtrName5 -ItemName $msgTable.allowedLocationPolicy -PolicyID $vars.AllowedLocationPolicyId -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -workspaceKey $workspaceKey -ReportTime $ReportTime -CBSSubscriptionName $vars.cbssubscriptionName",
      "variables":
      [
       {
@@ -167,7 +171,7 @@
      "Control":"Guardrails8",
      "ModuleType": "Builtin",
      "Status": "Enabled",
-     "Script": "Get-SubnetComplianceInformation -ControlName $CtrName8 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey      -ReportTime $ReportTime -CBSSubscriptionName $vars.CBSSubscriptionName",
+     "Script": "Get-SubnetComplianceInformation -ControlName $msgTable.CtrName8 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey -MsgTable $msgTable -ReportTime $ReportTime -CBSSubscriptionName $vars.CBSSubscriptionName",
      "variables":
      [
       {
@@ -181,7 +185,7 @@
      "Control":"Guardrails9",
      "ModuleType": "Builtin",
      "Status": "Enabled",
-     "Script": "Get-VnetComplianceInformation -ControlName $CtrName9 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey      -ReportTime $ReportTime -CBSSubscriptionName $vars.CBSSubscriptionName",
+     "Script": "Get-VnetComplianceInformation -ControlName $msgTable.CtrName9 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey -MsgTable $msgTable -ReportTime $ReportTime -CBSSubscriptionName $vars.CBSSubscriptionName",
      "variables":
      [
       {
@@ -195,7 +199,7 @@
      "Control":"Guardrails10",
      "ModuleType": "Builtin",
      "Status": "Enabled",
-     "Script": "Check-CBSSensors -SubscriptionName $vars.CBSSubscriptionName -TenantID $TenantID -ControlName $CtrName10 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey -ReportTime $ReportTime -LogType $LogType",
+     "Script": "Check-CBSSensors -SubscriptionName $vars.CBSSubscriptionName -TenantID $TenantID -ControlName $msgTable.CtrName10 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey -MsgTable $msgTable -ReportTime $ReportTime -LogType $LogType",
      "variables":
      [
       {
@@ -209,7 +213,7 @@
      "Control":"Guardrails11",
      "ModuleType": "Builtin",
      "Status": "Enabled",
-     "Script": "Check-LoggingAndMonitoring -SecurityLAWResourceId $vars.SecurityLAWResourceId -HealthLAWResourceId $vars.HealthLAWResourceId -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ControlName $CtrName11 -ReportTime $ReportTime -CBSSubscriptionName $vars.CBSSubscriptionName",
+     "Script": "Check-LoggingAndMonitoring -SecurityLAWResourceId $vars.SecurityLAWResourceId -HealthLAWResourceId $vars.HealthLAWResourceId -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ControlName $msgTable.CtrName11 -MsgTable $msgTable -ReportTime $ReportTime -CBSSubscriptionName $vars.CBSSubscriptionName",
      "variables":
      [
        {
@@ -231,6 +235,6 @@
      "Control":"Guardrails12",
      "ModuleType": "Builtin",
      "Status": "Enabled",
-     "Script": "Check-PrivateMarketPlaceCreation -ControlName $Ctrname12 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey -ReportTime $ReportTime -LogType $LogType"
+     "Script": "Check-PrivateMarketPlaceCreation -ControlName $msgTable.Ctrname12 -MsgTable $msgTable -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey -ReportTime $ReportTime -LogType $LogType"
   }
 ]

@@ -29,11 +29,13 @@ function Get-ADLicenseType {
      [string] $WorkSpaceID, 
      [string] $workspaceKey, 
      [string] $LogType,
+     [hashtable] $msgTable,
      [string] $ItemName,
     [Parameter(Mandatory=$true)]
     [string]
     $ReportTime
 )
+
     $ADLicenseType  = "N/A"
     $IsCompliant = $false
     $apiUrl = "https://graph.microsoft.com/v1.0/subscribedSkus"

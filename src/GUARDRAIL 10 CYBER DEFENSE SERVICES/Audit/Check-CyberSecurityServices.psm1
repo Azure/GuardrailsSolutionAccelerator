@@ -1,15 +1,13 @@
 function Check-CBSSensors {
     param (
         [string] $SubscriptionName , [string] $TenantID , [string] $ControlName, `
-        [string] $WorkSpaceID, [string] $workspaceKey, [string] $LogType,
+        [string] $WorkSpaceID, [string] $workspaceKey, [string] $LogType, [hashtable] $msgTable,
         [Parameter(Mandatory=$true)]
         [string]
         $ReportTime
     )
 
     $IsCompliant = $true 
-    [string] $Comment1 = "CBS Subscription doesnt exist"
-    [string] $Comment2 = "The expected CBC sensors do not exist"
     $SubsFound=""
     $Object = New-Object PSObject
 
@@ -40,7 +38,7 @@ function Check-CBSSensors {
                 (-$null -eq $CBSCEEventHubsNameSpaceRS) -or (-$null -eq $CBSKeyVaultNameRS) -or `
                 (-$null -eq $CBSStorageAccountNameRS) -or (-$null -eq $CBSAppServicePlanNameRS)) {
                 $IsCompliant = $false 
-                $Object | Add-Member -MemberType NoteProperty -Name Comments -Value $Comment2
+                $Object | Add-Member -MemberType NoteProperty -Name Comments -Value $msgTable.cbcSensorsdontExist
             }
             else {
                 $SubsFound+="$($sub.Name);"
@@ -49,13 +47,13 @@ function Check-CBSSensors {
     }
     else {
         $IsCompliant = $false
-        $Object | Add-Member -MemberType NoteProperty -Name Comments -Value $Comment1
-        $MitigationCommands = "Check subscription provided: $SubscriptionName  or check existence of the CBS solution in the provided subscription."
+        $Object | Add-Member -MemberType NoteProperty -Name Comments -Value $msgTable.cbsSubDoesntExist
+        $MitigationCommands = "$($msgTable.cbssMitigation) $($SubscriptionName)"
     }
     if ($IsCompliant)
     {
         $object | Add-Member -MemberType NoteProperty -Name ComplianceStatus -Value $IsCompliant
-        $object | Add-Member -MemberType NoteProperty -Name Comments -Value "Found resources in these subscriptions: $SubsFound"
+        $object | Add-Member -MemberType NoteProperty -Name Comments -Value "$($msgTable.cbssCompliant) $($SubsFound)"
         $MitigationCommands = "N/A."
     }
     $object | Add-Member -MemberType NoteProperty -Name ReportTime -Value $ReportTime
