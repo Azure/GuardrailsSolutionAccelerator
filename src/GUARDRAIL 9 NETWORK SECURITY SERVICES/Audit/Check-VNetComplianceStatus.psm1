@@ -28,7 +28,13 @@ function Get-VNetComplianceInformation {
     )
 [PSCustomObject] $VNetList = New-Object System.Collections.ArrayList
 
-$subs=Get-AzSubscription | Where-Object {$_.State -eq 'Enabled' -and $_.Name -ne $CBSSubscriptionName} 
+try {
+    $subs=Get-AzSubscription -ErrorAction Stop | Where-Object {$_.State -eq 'Enabled' -and $_.Name -ne $CBSSubscriptionName}  
+}
+catch {
+    Add-LogEntry 'Error' "Failed to execute the 'Get-AzSubscription' command--verify your permissions and the installion of the Az.Accounts module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+    throw "Error: Failed to execute the 'Get-AzSubscription'--verify your permissions and the installion of the Az.Accounts module; returned error message: $_"                
+}
 
 if ($ExcludedVNets -ne $null)
 {
