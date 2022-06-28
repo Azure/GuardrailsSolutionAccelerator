@@ -7,6 +7,7 @@ function Verify-AllowedLocationPolicy {
         [string] $WorkSpaceID,
         [string] $workspaceKey,
         [string] $LogType,
+        [hashtable] $msgTable,
         [Parameter(Mandatory=$true)]
         [string]
         $ReportTime,
@@ -24,11 +25,6 @@ function Verify-AllowedLocationPolicy {
     [PSCustomObject] $SubscriptionList = New-Object System.Collections.ArrayList
     [PSCustomObject] $CompliantList = New-Object System.Collections.ArrayList
     [PSCustomObject] $NonCompliantList = New-Object System.Collections.ArrayList
-    [string] $Comment1 = "The Policy or Initiative is not assigned on the "
-    [string] $Comment2 = " is excluded from the scope of the assignment"
-    [string] $Comment3 = "Compliant"
-    [string] $Comment4 = "The Policy or Initiative is not assigned on the Root Management Groups. "
-    [string] $Comment5 = "This Root Management Groups is excluded from the scope of the assignment"
 
     $AllowedLocations = @("canada" , "canadaeast" , "canadacentral")
 
@@ -50,7 +46,7 @@ function Verify-AllowedLocationPolicy {
 
                     If ($null -eq $AssignedPolicyList) {
                         $c | Add-Member -MemberType NoteProperty -Name ReportTime -Value $ReportTime -Force
-                        $c | Add-Member -MemberType NoteProperty -Name Comments -Value "$Comment1$type"
+                        $c | Add-Member -MemberType NoteProperty -Name Comments -Value $($msgTable.policyNotAssigned -f $type)
                         $c | Add-Member -MemberType NoteProperty -Name ComplianceStatus -Value $false
                         $c | Add-Member -MemberType NoteProperty -Name ControlName -Value $ControlName
                         $c | Add-Member -MemberType NoteProperty -Name ItemName -Value $ItemName
@@ -62,16 +58,16 @@ function Verify-AllowedLocationPolicy {
                         $c | Add-Member -MemberType NoteProperty -Name ItemName -Value $ItemName
                         $c | Add-Member -MemberType NoteProperty -Name "ComplianceStatus" -Value $false
                         if (-not (Test-AllowedLocation -AssignedLocations $AssignedPolicyLocation -AllowedLocations $AllowedLocations)  ) {
-                            $c | Add-Member -MemberType NoteProperty -Name Comments -Value $("$type$Comment2" + " Location is outside of the allowed locations. ")
+                            $c | Add-Member -MemberType NoteProperty -Name Comments -Value $($msgTable.excludedFromScope -f $type + $msgTable.notAllowedLocation)
                         }
                         else {
-                            $c | Add-Member -MemberType NoteProperty -Name Comments -Value "$type$Comment2"
+                            $c | Add-Member -MemberType NoteProperty -Name Comments -Value $($msgTable.excludedFromScope -f $type)
                         }
                         $NonCompliantList.add($c)  
                     }
                     else {
                         $c | Add-Member -MemberType NoteProperty -Name ReportTime -Value $ReportTime -Force
-                        $c | Add-Member -MemberType NoteProperty -Name Comments -Value $Comment3
+                        $c | Add-Member -MemberType NoteProperty -Name Comments -Value $msgTable.isCompliant
                         $c | Add-Member -MemberType NoteProperty -Name "ComplianceStatus" -Value $true
                         $c | Add-Member -MemberType NoteProperty -Name ControlName -Value $ControlName
                         $c | Add-Member -MemberType NoteProperty -Name ItemName -Value $ItemName
@@ -84,7 +80,7 @@ function Verify-AllowedLocationPolicy {
                     $AssignedPolicyList = Get-AzPolicyAssignment -scope $c.Id -PolicyDefinitionId $PolicyID
                     If ($null -eq $AssignedPolicyList) {
                         $c | Add-Member -MemberType NoteProperty -Name ReportTime -Value $ReportTime -Force
-                        $c | Add-Member -MemberType NoteProperty -Name Comments -Value "$Comment1$type"
+                        $c | Add-Member -MemberType NoteProperty -Name Comments -Value $($msgTable.policyNotAssigned -f $type)
                         $c | Add-Member -MemberType NoteProperty -Name "ComplianceStatus" -Value $false
                         $c | Add-Member -MemberType NoteProperty -Name ControlName -Value $ControlName
                         $c | Add-Member -MemberType NoteProperty -Name ItemName -Value $ItemName
@@ -96,16 +92,16 @@ function Verify-AllowedLocationPolicy {
                         $c | Add-Member -MemberType NoteProperty -Name ItemName -Value $ItemName
                         $c | Add-Member -MemberType NoteProperty -Name "ComplianceStatus" -Value $false
                         if (-not (Test-AllowedLocation -AssignedLocations $AssignedPolicyLocation -AllowedLocations $AllowedLocations)  ) {
-                            $c | Add-Member -MemberType NoteProperty -Name Comments -Value $("$type$Comment2 - Location is outside of the allowed locations.")
+                            $c | Add-Member -MemberType NoteProperty -Name Comments -Value $($msgTable.excludedFromScope -f $type + $msgTable.notAllowedLocation)
                         }
                         else {
-                            $c | Add-Member -MemberType NoteProperty -Name Comments -Value "$type$Comment2"
+                            $c | Add-Member -MemberType NoteProperty -Name Comments -Value $($msgTable.excludedFromScope -f $type)
                         }
                         $NonCompliantList.add($c)  
                     }
                     else {       
                         $c | Add-Member -MemberType NoteProperty -Name ReportTime -Value $ReportTime -Force
-                        $c | Add-Member -MemberType NoteProperty -Name Comments -Value $Comment3
+                        $c | Add-Member -MemberType NoteProperty -Name Comments -Value $msgTable.isCompliant
                         $c | Add-Member -MemberType NoteProperty -Name "ComplianceStatus" -Value $true
                         $c | Add-Member -MemberType NoteProperty -Name ControlName -Value $ControlName
                         $c | Add-Member -MemberType NoteProperty -Name ItemName -Value $ItemName
@@ -120,7 +116,7 @@ function Verify-AllowedLocationPolicy {
     $AssignedPolicyList = Get-AzPolicyAssignment -scope $RootMG.Id -PolicyDefinitionId $PolicyID
     If ($null -eq $AssignedPolicyList) {
         $RootMG | Add-Member -MemberType NoteProperty -Name ReportTime -Value $ReportTime -Force
-        $RootMG | Add-Member -MemberType NoteProperty -Name Comments -Value $Comment4
+        $RootMG | Add-Member -MemberType NoteProperty -Name Comments -Value $msgTable.policyNotAssignedRootMG
         $RootMG | Add-Member -MemberType NoteProperty -Name "ComplianceStatus" -Value $false
         $RootMG | Add-Member -MemberType NoteProperty -Name ControlName -Value $ControlName
         $RootMG | Add-Member -MemberType NoteProperty -Name ItemName -Value $ItemName
@@ -132,15 +128,15 @@ function Verify-AllowedLocationPolicy {
         $RootMG | Add-Member -MemberType NoteProperty -Name ItemName -Value $ItemName
         $RootMG | Add-Member -MemberType NoteProperty -Name "ComplianceStatus" -Value $false
         if (-not (Test-AllowedLocation -AssignedLocations $AssignedPolicyLocation -AllowedLocations $AllowedLocations)  ) {
-            $RootMG | Add-Member -MemberType NoteProperty -Name Comments -Value $($Comment5 + "- Location is outside of the allowed locations. ")
+            $RootMG | Add-Member -MemberType NoteProperty -Name Comments -Value $($msgTable.rootMGExcluded + $msgTable.notAllowedLocation)
         }
         else {
-            $RootMG | Add-Member -MemberType NoteProperty -Name Comments -Value $Comment5
+            $RootMG | Add-Member -MemberType NoteProperty -Name Comments -Value $msgTable.rootMGExcluded
         }
         $NonCompliantList.add($RootMG)  
     }
     else {       
-        $RootMG | Add-Member -MemberType NoteProperty -Name Comments -Value $Comment3
+        $RootMG | Add-Member -MemberType NoteProperty -Name Comments -Value $msgTable.isCompliant
         $RootMG | Add-Member -MemberType NoteProperty -Name "ComplianceStatus" -Value $true
         $RootMG | Add-Member -MemberType NoteProperty -Name ControlName -Value $ControlName -Force
         $RootMG | Add-Member -MemberType NoteProperty -Name ItemName -Value $ItemName -Force

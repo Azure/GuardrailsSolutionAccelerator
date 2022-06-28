@@ -2,6 +2,12 @@
 function Check-ADDeletedUsers  {
     Param (
         [string] $Token,
+        [string] $ControlName, 
+        [string] $ItemName, 
+        [string] $LogType,
+        [string] $WorkSpaceID, 
+        [string] $workspaceKey, 
+        [hashtable] $msgTable,
         [Parameter(Mandatory=$true)]
         [string]
         $ReportTime
@@ -10,8 +16,6 @@ function Check-ADDeletedUsers  {
     [psCustomOBject] $deletedUsersArray = New-Object System.Collections.ArrayList
     [psCustomOBject] $guestUsersArray = New-Object System.Collections.ArrayList
     [bool] $IsCompliant= $false
-    [string] $Comment1= "This user account has been deleted; it has not yet been DELETED PERMANENTLY from Azure Active Directory"
-    [string] $Comment2= "This is a GUEST account and needs to be removed from your Azure Active Directory"
 
     $apiUrl= "https://graph.microsoft.com/beta/directory/deleteditems/microsoft.graph.user"
     $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl
@@ -22,7 +26,7 @@ function Check-ADDeletedUsers  {
           DisplayName = $User.displayName
           Mail = $User.mail
           DeletedDate = $User.deletedDateTime
-          Comments = $Comment1
+          Comments = $msgTable.accountNotDeleted
           ReportTime = $ReportTime
           ItemName = "ADDeletedUser"
           }
@@ -50,7 +54,7 @@ function Check-ADDeletedUsers  {
              Type = $User.userType
              CreatedDate = $User.createdDateTime
              Enabled = $User.accountEnabled
-             Comments = $Comment2
+             Comments = $msgTable.guestMustbeRemoved
              ReportTime = $ReportTime
              ItemName = "ADDisabledUsers"
         }

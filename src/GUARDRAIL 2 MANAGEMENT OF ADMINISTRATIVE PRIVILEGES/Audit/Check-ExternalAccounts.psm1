@@ -12,12 +12,12 @@
             [string] $WorkSpaceID, 
             [string] $workspaceKey, 
             [string] $LogType,
+            [hashTable] $msgTable,
             [Parameter(Mandatory=$true)]
             [string]
             $ReportTime
             )
     
-    [string] $Comment2= "This is a GUEST account and needs to be removed from you Azure Active Directory"
     [psCustomOBject] $guestUsersArray = New-Object System.Collections.ArrayList
     [bool] $IsCompliant= $false
     
@@ -34,7 +34,7 @@
                 Type = $User.userType
                 CreatedDate = $User.createdDateTime
                 Enabled = $User.accountEnabled
-                Comments = $Comment2
+                Comments = $msgTable.guestMustbeRemoved
                 ReportTime = $ReportTime
                 ItemName= $ItemName 
             }
@@ -55,11 +55,11 @@
         $IsCompliant= $true
         $MitigationCommands = "N/A"
     }
-    $MitigationCommands = "Remove guest accounts from Azure AD."
+    $MitigationCommands = $msgTable.removeGuestAccounts
     $GuestUserStatus = [PSCustomObject]@{
         ComplianceStatus= $IsCompliant
         ControlName = $ControlName
-        Comments= $Comment2
+        Comments= $msgTable.guestMustbeRemoved
         ItemName= $ItemName
         ReportTime = $ReportTime
         MitigationCommands = $MitigationCommands

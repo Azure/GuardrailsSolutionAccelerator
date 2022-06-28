@@ -1,20 +1,17 @@
 Disable-AzContextAutosave
 
-#Import-LocalizedData -BaseDirectory werwer -BindingVariable "msgTable" -FileName qweer -UICulture "en-CA"
-
 #region Parameters 
-$CtrName1 = "GUARDRAIL 1: PROTECT ROOT / GLOBAL ADMINS ACCOUNT"
-$CtrName2 = "GUARDRAIL 2: MANAGEMENT OF ADMINISTRATIVE PRIVILEGES"
-$CtrName3 = "GUARDRAIL 3: CLOUD CONSOLE ACCESS"
-$CtrName4 = "GUARDRAIL 4: ENTERPRISE MONITORING ACCOUNTS"
-$CtrName5 = "GUARDRAIL 5: DATA LOCATION"
-$CtrName6 = "GUARDRAIL 6: PROTECTION OF DATA-AT-REST"
-$CtrName7 = "GUARDRAIL 7: PROTECTION OF DATA-IN-TRANSIT"
-$CtrName8 = "GUARDRAIL 8: NETWORK SEGMENTATION AND SEPARATION"
-$CtrName9 = "GUARDRAIL 9: NETWORK SECURITY SERVICES"
-$CtrName10 = "GUARDRAIL 10: CYBER DEFENSE SERVICES"
-$CtrName11 = "GUARDRAIL 11: LOGGING AND MONITORING"
-$CtrName12 = "GUARDRAIL 12: CONFIGURATION OF CLOUD MARKETPLACES"
+$ContainerName = Get-AutomationVariable -Name "ContainerName" 
+$PBMMPolicyID = Get-AutomationVariable -Name "PBMMPolicyID"
+$AllowedLocationPolicyId = Get-AutomationVariable -Name "AllowedLocationPolicyId"
+$DepartmentNumber = Get-AutomationVariable -Name "DepartmentNumber"
+$CBSSubscriptionName = Get-AutomationVariable -Name "CBSSubscriptionName"
+$SecurityLAWResourceId = Get-AutomationVariable -Name "SecurityLAWResourceId"
+$HealthLAWResourceId = Get-AutomationVariable -Name "HealthLAWResourceId"
+$Locale = Get-AutomationVariable -Name "GuardRailsLocale"
+
+$ReportTime = (get-date).tostring("dd-MM-yyyy-hh:mm:ss")
+#endregion Parameters 
 
 #Standard variables
 $WorkSpaceID=Get-AutomationVariable -Name "WorkSpaceID" 
@@ -22,8 +19,8 @@ $LogType=Get-AutomationVariable -Name "LogType"
 $KeyVaultName=Get-AutomationVariable -Name "KeyVaultName" 
 $GuardrailWorkspaceIDKeyName=Get-AutomationVariable -Name "GuardrailWorkspaceIDKeyName" 
 $ResourceGroupName=Get-AutomationVariable -Name "ResourceGroupName"
-$ReportTime=(get-date).tostring("dd-MM-yyyy-hh:mm:ss")
 $StorageAccountName=Get-AutomationVariable -Name "StorageAccountName" 
+
 
 # Connects to Azure using the Automation Account's managed identity
 Connect-AzAccount -Identity
@@ -47,13 +44,16 @@ Write-Output "Found $($modules.Count) modules."
 # Gets a token for the current sessions (Automation account's MI that can be used by the modules.)
 [String] $GraphAccessToken = (Get-AzAccessToken -ResourceTypeName MSGraph).Token
 
+# This loads the file containing all of the messages in the culture specified in the automation account variable "GuardRailsLocale"
+Import-LocalizedData -BindingVariable "msgTable" -UICulture $Locale -FileName "GR-ComplianceChecks-Msgs" -BaseDirectory "C:\Modules\User\GR-ComplianceChecks" #-ErrorAction SilentlyContinue
+
 foreach ($module in $modules)
 {
     $NewScriptBlock = [scriptblock]::Create($module.Script)
     Write-Output "Processing Module $($module.modulename)" -ForegroundColor Yellow
     $variables=$module.variables
     $secrets=$module.secrets
-    $localVariables=$module.$localVariables
+    $localVariables=$module.localVariables
     $vars = [PSCustomObject]@{}          
     if ($variables -ne $null)
     {
@@ -83,4 +83,3 @@ foreach ($module in $modules)
     $NewScriptBlock.Invoke()
 }
 break
-
