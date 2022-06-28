@@ -28,7 +28,14 @@ function Verify-AllowedLocationPolicy {
 
     $AllowedLocations = @("canada" , "canadaeast" , "canadacentral")
 
-    foreach ($mg in Get-AzManagementGroup) {
+    try {
+        $managementGroups = Get-AzManagementGroup -ErrorAction Stop
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to execute the 'Get-AzManagementGroup' command--verify your permissions and the installion of the Az.Resources module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        throw "Error: Failed to execute the 'Get-AzManagementGroup' command--verify your permissions and the installion of the Az.Resources module; returned error message: $_"
+    }
+    foreach ($mg in $managementGroups) {
         $MG = Get-AzManagementGroup -GroupName $mg.Name -Expand -Recurse
         $MGItems.Add($MG)
         if ($null -eq $MG.ParentId) {
@@ -41,7 +48,14 @@ function Verify-AllowedLocationPolicy {
                 if ($c.Type -eq "/subscriptions" -and (-not $SubscriptionList.Contains($c) -and $c.DisplayName -ne $CBSSubscriptionName)) {
                     [string]$type = "subscription"
                     $SubscriptionList.Add($c)
-                    $AssignedPolicyList = Get-AzPolicyAssignment -scope $c.Id -PolicyDefinitionId $PolicyID
+
+                    try {
+                        $AssignedPolicyList = Get-AzPolicyAssignment -scope $c.Id -PolicyDefinitionId $PolicyID -ErrorAction Stop
+                    }
+                    catch {
+                        Add-LogEntry 'Error' "Failed to execute the 'Get-AzPolicyAssignment' command for scope '$($c.id)'--verify your permissions and the installion of the Az.Resources module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+                        Write-Error "Error: Failed to execute the 'Get-AzPolicyAssignment' command for scope '$($c.id)'--verify your permissions and the installion of the Az.Resources module; returned error message: $_"                
+                    }
                     $AssignedPolicyLocation = $AssignedPolicyList.Properties.Parameters.listOfAllowedLocations.value
 
                     If ($null -eq $AssignedPolicyList) {
@@ -77,7 +91,15 @@ function Verify-AllowedLocationPolicy {
                 elseif ($c.Type -like "*managementGroups*" -and (-not $MGList.Contains($c)) ) {
                     [string]$type = "Management Groups"
                     $MGList.Add($c)
-                    $AssignedPolicyList = Get-AzPolicyAssignment -scope $c.Id -PolicyDefinitionId $PolicyID
+
+                    try {
+                        $AssignedPolicyList = Get-AzPolicyAssignment -scope $c.Id -PolicyDefinitionId $PolicyID -ErrorAction Stop
+                    }
+                    catch {
+                        Add-LogEntry 'Error' "Failed to execute the 'Get-AzPolicyAssignment' command for scope '$($c.id)'--verify your permissions and the installion of the Az.Resources module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+                        Write-Error "Error: Failed to execute the 'Get-AzPolicyAssignment' command for scope '$($c.id)'--verify your permissions and the installion of the Az.Resources module; returned error message: $_"                
+                    }
+
                     If ($null -eq $AssignedPolicyList) {
                         $c | Add-Member -MemberType NoteProperty -Name ReportTime -Value $ReportTime -Force
                         $c | Add-Member -MemberType NoteProperty -Name Comments -Value $($msgTable.policyNotAssigned -f $type)
@@ -113,7 +135,13 @@ function Verify-AllowedLocationPolicy {
     }
 
 
-    $AssignedPolicyList = Get-AzPolicyAssignment -scope $RootMG.Id -PolicyDefinitionId $PolicyID
+    try {
+        $AssignedPolicyList = Get-AzPolicyAssignment -scope $RootMG.Id -PolicyDefinitionId $PolicyID -ErrorAction Stop
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to execute the 'Get-AzPolicyAssignment' command for scope '$($RootMG.Id)'--verify your permissions and the installion of the Az.Resources module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        Write-Error "Error: Failed to execute the 'Get-AzPolicyAssignment' command for scope '$($RootMG.Id)'--verify your permissions and the installion of the Az.Resources module; returned error message: $_"                
+    }
     If ($null -eq $AssignedPolicyList) {
         $RootMG | Add-Member -MemberType NoteProperty -Name ReportTime -Value $ReportTime -Force
         $RootMG | Add-Member -MemberType NoteProperty -Name Comments -Value $msgTable.policyNotAssignedRootMG

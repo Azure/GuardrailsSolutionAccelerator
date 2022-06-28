@@ -35,7 +35,8 @@ function Check-ADDeletedUsers {
             $NextLink = $users.'@odata.nextLink'
         }
     }
-    catch { 
+    catch {
+
         $DepracteUserStatus = [PSCustomObject]@{
             ComplianceStatus = $IsCompliant
             ControlName      = $ControlName
@@ -48,7 +49,11 @@ function Check-ADDeletedUsers {
         
         Send-OMSAPIIngestionFile  -customerId $WorkSpaceID -sharedkey $workspaceKey `
             -body $JasonDepracteUserStatus   -logType $LogType -TimeStampField Get-Date  
-    }
+
+        Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        Write-Error "Error: Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_"
+        
+        }
 
     if ($AllUsers.count -gt 0) {
         foreach ($user in $AllUsers) {

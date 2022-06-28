@@ -22,7 +22,13 @@
     [bool] $IsCompliant= $false
     
     $apiUrl= "https://graph.microsoft.com/beta/users/"
-    $guestAccountData = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl
+    try {
+        $guestAccountData = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        Write-Error "Error: Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_"
+    }
 
     $guestUsers = $guestAccountData.value
     forEach ($User in $guestUsers) {

@@ -52,7 +52,15 @@ function Test-ExemptionExists {
     $newObject=new-customObject -Type $object.Type -Name $object.Name -DisplayName $object.DisplayName `
     -Id $object.Id -ComplianceStatus $true -Comments "" -ItemName $ItemName  `
     -CtrlName $ControlName -ReportTime $ReportTime
-    $exemptionsIds=(Get-AzPolicyExemption -Scope $ScopeId).Properties.PolicyDefinitionReferenceIds
+
+    try {
+        $exemptionsIds=(Get-AzPolicyExemption -Scope $ScopeId -ErrorAction Stop).Properties.PolicyDefinitionReferenceIds
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to execute the 'Get-AzPolicyExemption' command for scope '$scopeId'--verify your permissions and the installion of the Az.Resources module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        Write-Error "Error: Failed to execute the 'Get-AzPolicyExemption' command for scope '$scopeId'--verify your permissions and the installion of the Az.Resources module; returned error message: $_"                
+    }
+
     if ($null -ne $exemptionsIds)
     {
         foreach ($exemptionId in $exemptionsIds)
@@ -102,7 +110,14 @@ function Verify-PBMMPolicy {
     $gr7RequiredPolicies=@("FunctionAppShouldOnlyBeAccessibleOverHttps","WebApplicationShouldOnlyBeAccessibleOverHttps", "ApiAppShouldOnlyBeAccessibleOverHttps", "OnlySecureConnectionsToYourRedisCacheShouldBeEnabled","SecureTransferToStorageAccountsShouldBeEnabled")
     
     #Code Starts
-    foreach ($mg in Get-AzManagementGroup) {
+    try {
+        $managementGroups = Get-AzManagementGroup -ErrorAction Stop
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to execute the 'Get-AzManagementGroup' command--verify your permissions and the installion of the Az.Resources module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        throw "Error: Failed to execute the 'Get-AzManagementGroup' command--verify your permissions and the installion of the Az.Resources module; returned error message: $_"
+    }
+    foreach ($mg in $managementGroups) {
         $MG = Get-AzManagementGroup -GroupName $mg.Name -Expand -Recurse
         $MGItems.Add($MG)
         if ($null -eq $MG.ParentId) {
@@ -116,7 +131,15 @@ function Verify-PBMMPolicy {
                 if ($c.Type -eq "/subscriptions" -and (-not $SubscriptionList.Contains($c)) -and $c.DisplayName -ne $CBSSubscriptionName) {
                     [string]$type = $msgTable.subscription
                     $SubscriptionList.Add($c)
-                    $AssignedPolicyList = Get-AzPolicyAssignment -scope $c.Id -PolicyDefinitionId $PolicyID
+
+                    try {
+                        $AssignedPolicyList = Get-AzPolicyAssignment -scope $c.Id -PolicyDefinitionId $PolicyID -ErrorAction Stop
+                    }
+                    catch {
+                        Add-LogEntry 'Error' "Failed to execute the 'Get-AzPolicyAssignment' command for scope '$($c.id)'--verify your permissions and the installion of the Az.Resources module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+                        Write-Error "Error: Failed to execute the 'Get-AzPolicyAssignment' command for scope '$($c.id)'--verify your permissions and the installion of the Az.Resources module; returned error message: $_"                
+                    }
+
                     If ($null -eq $AssignedPolicyList) {
                         $c=new-customObject -Type $c.Type -Id $c.Id -Name $c.Name `
                         -DisplayName $c.DisplayName `
@@ -197,7 +220,15 @@ function Verify-PBMMPolicy {
                 elseif ($c.Type -like "*managementGroups*" -and (-not $MGList.Contains($c)) ) {
                     [string]$type = $msgTable.managementGroup
                     $MGList.Add($c)
-                    $AssignedPolicyList = Get-AzPolicyAssignment -scope $C.Id -PolicyDefinitionId $PolicyID
+
+                    try {
+                        $AssignedPolicyList = Get-AzPolicyAssignment -scope $c.Id -PolicyDefinitionId $PolicyID -ErrorAction Stop
+                    }
+                    catch {
+                        Add-LogEntry 'Error' "Failed to execute the 'Get-AzPolicyAssignment' command for scope '$($c.id)'--verify your permissions and the installion of the Az.Resources module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+                        Write-Error "Error: Failed to execute the 'Get-AzPolicyAssignment' command for scope '$($c.id)'--verify your permissions and the installion of the Az.Resources module; returned error message: $_"                
+                    }
+                    
                     If ($null -eq $AssignedPolicyList) {
                         $c=new-customObject -Type $c.Type -Id $c.Id -Name $c.Name -DisplayName $c.DisplayName `
                         -CtrlName $ControlName `
@@ -279,7 +310,15 @@ function Verify-PBMMPolicy {
             }                
         }
     }
-    $AssignedPolicyList = Get-AzPolicyAssignment -scope $RootMG.Id -PolicyDefinitionId $PolicyID
+    
+    try {
+        $AssignedPolicyList = Get-AzPolicyAssignment -scope $RootMG.Id -PolicyDefinitionId $PolicyID -ErrorAction Stop
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to execute the 'Get-AzPolicyAssignment' command for scope '$($RootMG.Id)'--verify your permissions and the installion of the Az.Resources module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        Write-Error "Error: Failed to execute the 'Get-AzPolicyAssignment' command for scope '$($RootMG.Id)'--verify your permissions and the installion of the Az.Resources module; returned error message: $_"                
+    }
+    
     If ($null -eq $AssignedPolicyList) {
         Write-Output "RootMG: $($RootMG.DisplayName)"
         $RootMG2=new-customObject -Type $RootMG.Type -Id $RootMG.Id -Name $RootMG.Name -DisplayName $RootMG.DisplayName `
