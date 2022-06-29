@@ -18,7 +18,7 @@ function Generate-Manifest {
         $PSM1Files = Get-ChildItem -Path $($DirectoryPath + "\*")-include *.psm1 -File -Recurse | Select-Object LastWriteTime, Name,FullName, BaseName, Directory | Out-GridView -PassThru
     }
     else {
-        $PSM1Files = Get-ChildItem -Path $($DirectoryPath + "\*")-include *.psm1 -File -Recurse
+        $PSM1Files = Get-ChildItem -Path $($DirectoryPath + "\")-include *.psm1 -File -Recurse
     }
     $overriteAll=$false
     Write-Output "Found $($PSM1Files.count)"
