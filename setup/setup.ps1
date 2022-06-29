@@ -178,7 +178,7 @@ $tags=get-content ./tags.json | convertfrom-json
 $tagstable=@{}
 $tags.psobject.properties | Foreach { $tagstable[$_.Name] = $_.Value }
 try {
-    New-AzResourceGroup -Name $resourceGroup -Location $region -Tags $tags
+    New-AzResourceGroup -Name $resourceGroup -Location $region -Tags $tagstable
 }
 catch { Write-error "Error creating resource group. "}
 Write-Output "Deploying solution through bicep."
