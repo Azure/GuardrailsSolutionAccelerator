@@ -16,6 +16,7 @@ function Get-SubnetComplianceInformation {
         [Parameter(Mandatory=$false)]
         [array]
         $ExcludedSubnets,
+        [hashtable] $msgTable,
         [Parameter(Mandatory=$true)]
         [string]
         $ReportTime,
@@ -35,7 +36,7 @@ function Get-SubnetComplianceInformation {
     }
     foreach ($sub in $subs)
     {
-        Write-Verbose "Selecting subscription..."
+        Write-Verbose "Selecting subscription: $($sub.Name)"
         Select-AzSubscription -SubscriptionObject $sub
         
         $VNets=Get-AzVirtualNetwork
@@ -56,7 +57,7 @@ function Get-SubnetComplianceInformation {
                         {
                             #checks NSGs
                             $ComplianceStatus=$false
-                            $Comments="No NSG is present."
+                            $Comments = $msgTable.noNSG
                             $MitigationCommands=@"
 # https://docs.microsoft.com/en-us/powershell/module/az.network/set-azvirtualnetworksubnetconfig?view=azps-8.0.0#2-add-a-network-security-group-to-a-subnet
 #Creates NSG Resource for subnet $($subnet.Name)
@@ -78,12 +79,12 @@ Get-AzVirtualNetwork -ResourceGroupName $($vnet.ResourceGroupName) -Name $($vnet
                                     if ($LastSecurityRule.DestinationAddressPrefix -eq '*' -and $LastSecurityRule.Access -eq "Deny") # Determine all criteria for good or bad here...
                                     {
                                         $ComplianceStatus=$true
-                                        $Comments = "Subnet is compliant."
+                                        $Comments = $msgTable.subnetCompliant
                                         $MitigationCommands="N/A"
                                     }
                                     else {
                                         $ComplianceStatus=$false
-                                        $Comments="NSG is present but not properly configured (Missing Deny all last Rule)."
+                                        $Comments = $msgTable.nsgConfigDenyAll
                                         $MitigationCommands=@"
 Select-azsubscription $($sub.SubscriptionId)
 `$nsg=Get-AzNetworkSecurityGroup -Name $($subnet.NetworkSecurityGroup.Id.Split("/")[8]) -ResourceGroupName $($subnet.NetworkSecurityGroup.Id.Split("/")[4])
@@ -106,7 +107,7 @@ Add-AzNetworkSecurityRuleConfig @RuleParams | Set-AzNetworkSecurityGroup
                                 else {
                                     #NSG is present but has no custom rules at all.
                                     $ComplianceStatus=$false
-                                    $Comments="NSG is present but not properly configured (Missing Custom Rules)."
+                                    $Comments = $msgTable.nsgCustomRule
                                     $MitigationCommands=@"
 Select-azsubscription $($sub.SubscriptionId)
 `$nsg=Get-AzNetworkSecurityGroup -Name $($subnet.NetworkSecurityGroup.Id.Split("/")[8]) -ResourceGroupName $($subnet.NetworkSecurityGroup.Id.Split("/")[4])
@@ -131,7 +132,7 @@ Add-AzNetworkSecurityRuleConfig @RuleParams | Set-AzNetworkSecurityGroup
                                 SubnetName="$($VNet.Name)\$($subnet.Name)"
                                 ComplianceStatus = $ComplianceStatus
                                 Comments = $Comments
-                                ItemName = "Segmentation"
+                                ItemName = $msgTable.networkSegmentation
                                 ControlName = $ControlName
                                 MitigationCommands=$MitigationCommands
                                 ReportTime = $ReportTime
@@ -145,28 +146,27 @@ Add-AzNetworkSecurityRuleConfig @RuleParams | Set-AzNetworkSecurityGroup
                                 Write-Debug "Found $UDR UDR"
                                 $routeTable=Get-AzRouteTable -ResourceGroupName $subnet.RouteTable.Id.Split("/")[4] -name $UDR
                                 $ComplianceStatus=$true
-                                $Comments="Subnet is compliant."
+                                $Comments= $msgTable.subnetCompliant
                                 $MitigationCommands="N/A"
                                 foreach ($route in $routeTable.Routes)
                                 {
                                     if ($route.NextHopType -ne "VirtualAppliance")
                                     {
                                         $ComplianceStatus=$false
-                                        $Comments="Route present but not directed to a Virtual Appliance."
-                                        $MitigationCommands="Update the route to point to a virtual appliance"
+                                        $Comments = $msgTable.routeNVA
+                                        $MitigationCommands = $msgTable.routeNVAMitigation
                                     }
                                 }
                             }
                             else {
                                 $ComplianceStatus=$false
-                                $Comments="No User defined Route configured."
-                                $MitigationCommands="Please apply a custom route to this subnet, pointing to a virtual appliance."
+                                $Comments= $msgTable.noUDR
+                                $MitigationCommands = $msgTable.noUDRMitigation
                             }
-
                         }
                         else { #subnet excluded
                             $ComplianceStatus=$true
-                            $Comments="Subnet Excluded (manually or reserved name)."
+                            $Comments=$msgTable.subnetExcluded
                             $MitigationCommands="N/A"                            
                         }
                         $SubnetObject = [PSCustomObject]@{ 
@@ -174,7 +174,7 @@ Add-AzNetworkSecurityRuleConfig @RuleParams | Set-AzNetworkSecurityGroup
                             SubnetName="$($VNet.Name)\$($subnet.Name)"
                             ComplianceStatus = $ComplianceStatus
                             Comments = $Comments
-                            ItemName = "Separation"
+                            ItemName = $msgTable.networkSeparation
                             ControlName = $ControlName
                             ReportTime = $ReportTime
                             MitigationCommands=$MitigationCommands

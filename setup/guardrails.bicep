@@ -672,7 +672,16 @@ resource module14 'modules' ={
       }
     }
   }
-  resource variable1 'variables' = {
+  resource module21 'modules' ={
+    name: 'GR-ComplianceChecks'
+    properties: {
+      contentLink: {
+        uri: '${CustomModulesBaseURL}/GR-ComplianceChecks.zip'
+        version: '1.0.0'
+      }
+    }
+  }
+resource variable1 'variables' = {
     name: 'KeyvaultName'
     properties: {
         isEncrypted: false
@@ -763,6 +772,13 @@ resource module14 'modules' ={
       'isEncrypted': false
       'value': '"${HealthLAWResourceId}"'
     }
+  }
+  resource variable15 'variables' = {
+    name: 'GuardRailsLocale'
+    'properties': {
+      'isEncrypted': false
+      'value': '"${Locale}"'
+  }
   }
 }
 

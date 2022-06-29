@@ -20,6 +20,7 @@ function Get-BreakGlassAccounts {
     [string] $FirstBreakGlassUPN, 
     [string] $SecondBreakGlassUPN,
     [string] $token, 
+    [hashtable] $msgTable,
     [string] $LogType,
     [string] $WorkSpaceID,
     [string] $WorkspaceKey, 
@@ -30,11 +31,8 @@ function Get-BreakGlassAccounts {
     $ReportTime
   )
   [bool] $FirstBGAcctExist = $false
-  [bool] $SecondBGAcctExist = $false
-   
-    
+  [bool] $SecondBGAcctExist = $false    
   [bool] $IsCompliant = $false
-
 
   [String] $FirstBreakGlassUPNUrl = $("https://graph.microsoft.com/beta/users/" + $FirstBreakGlassUPN)
   [String] $SecondBreakGlassUPNUrl = $("https://graph.microsoft.com/beta/users/" + $SecondBreakGlassUPN)
@@ -80,7 +78,7 @@ function Get-BreakGlassAccounts {
     ComplianceStatus = $IsCompliant
     ControlName      = $ControlName
     ItemName         = $ItemName
-    Comments          = $FirstBreakGlassUPN + " Compliance status = " + $FirstBGAcctExist + " " + "," + " " + $SecondBreakGlassUPN + " Compliance status  =" + $SecondBGAcctExist
+    Comments          = $msgTable.bgAccountsCompliance -f $FirstBreakGlassUPN, $FirstBGAcctExist, $SecondBreakGlassUPN, $SecondBGAcctExist
     ReportTime      = $ReportTime
   }
 

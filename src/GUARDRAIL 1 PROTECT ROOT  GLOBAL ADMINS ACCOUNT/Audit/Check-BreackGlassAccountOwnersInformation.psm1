@@ -25,6 +25,7 @@ function Get-BreakGlassOwnerinformation {
         [string] $WorkSpaceID, 
         [string] $WorkSpaceKey, 
         [string] $LogType,
+        [hashtable] $msgTable,
         [Parameter(Mandatory=$true)]
         [string]
         $ReportTime
@@ -56,21 +57,27 @@ function Get-BreakGlassOwnerinformation {
         try {
             $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl
             $BGOwner.ComplianceStatus = $true
-            $BGOwner.ComplianceComments = "BG Account has a Manager"
+            $BGOwner.ComplianceComments = $msgTable.bgAccountHasManager -f $BGOwner.UserPrincipalName
         }
         catch {
             $BGOwner.ComplianceStatus = $false
-            $BGOwner.ComplianceComments = "BG Account doesnt has a Manager"
+            $BGOwner.ComplianceComments = $msgTable.bgAccountNoManager -f $BGOwner.UserPrincipalName
         }
     }
     $IsCompliant = $FirstBreakGlassOwner.ComplianceStatus -and $SecondBreakGlassOwner.ComplianceStatus
 
     if ($IsCompliant) {
-        $Comments = "Both BreakGlass accounts have manager"
+        $Comments = $msgTable.bgBothHaveManager
     }
     else {
-        $Comments = "First BreakGlass Owner " + $FirstBreakGlassOwner.UserPrincipalName + " doesnt have a manager listed in the directory or " + `
-            "Second BreakGlass Owner " + $SecondBreakGlassOwner.UserPrincipalName + " doesnt have a manager listed in the directory ."
+        if ($FirstBreakGlassOwner.ComplianceStatus -eq $false) {
+            $Comments = $BGOwners[0].ComplianceComments
+        }
+        if ($SecondBreakGlassOwner.ComplianceStatus -eq $false) {
+            $Comments = $Comments + $BGOwners[1].ComplianceComments
+        }
+        #$Comments = "First BreakGlass Owner " + $FirstBreakGlassOwner.UserPrincipalName + " doesnt have a manager listed in the directory or " + `
+        #    "Second BreakGlass Owner " + $SecondBreakGlassOwner.UserPrincipalName + " doesnt have a manager listed in the directory ."
     }
     $PsObject = [PSCustomObject]@{
         ComplianceStatus = $IsCompliant

@@ -7,13 +7,14 @@ function Check-ADDeletedUsers {
         [string] $WorkSpaceID, 
         [string] $workspaceKey, 
         [string] $LogType,
+        [hashtable] $msgTable,
         [Parameter(Mandatory=$true)]
         [string]
         $ReportTime
     )
     [bool] $IsCompliant = $false
-    [string] $UComments = "The following Users are:- "
-    [string] $CComments = "Didnt find any unsynced deprecated users"
+    [string] $UComments = $msgTable.noncompliantUsers
+    [string] $CComments = $msgTable.compliantComment
 
 
     [PSCustomObject] $AllUsers = New-Object System.Collections.ArrayList
@@ -38,9 +39,9 @@ function Check-ADDeletedUsers {
         $DepracteUserStatus = [PSCustomObject]@{
             ComplianceStatus = $IsCompliant
             ControlName      = $ControlName
-            Comments         = "API Error"
+            Comments         = $msgTable.apiError
             ItemName         = $ItemName
-            MitigationCommands = "Please verify existance of the user (more likely) or application permissions."
+            MitigationCommands = $msgTable.apiErrorMitigation
             ReportTime = $ReportTime        
         }
         $JasonDepracteUserStatus = ConvertTo-Json -inputObject $DepracteUserStatus
@@ -56,8 +57,8 @@ function Check-ADDeletedUsers {
                 $UComments =  $UComments + $user.userPrincipalName + "  "
             }
         }
-        $Comments = "Total Number of users  " + $DeprecatedUsers.count +" "+ $UComments
-        $MitigationCommands = "Verify is the users reported are deprecated." 
+        $Comments = $msgTable.noncompliantComment -f $DeprecatedUsers.count +" "+ $UComments
+        $MitigationCommands = $msgTable.mitigationCommands 
     }
     else {
         $Comments = $CComments

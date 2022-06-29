@@ -1,12 +1,13 @@
 function Check-MonitorAccountCreation {
   param (
     [string] $token, 
-    [string] $DepartmentNumner,
+    [string] $DepartmentNumber,
     [string] $ControlName, 
     [string] $ItemName, 
     [string] $WorkSpaceID, 
     [string] $workspaceKey, 
     [string] $LogType,
+    [hashtable] $msgTable,
     [Parameter(Mandatory=$true)]
     [string]
     $ReportTime)
@@ -14,7 +15,7 @@ function Check-MonitorAccountCreation {
   [bool] $IsCompliant = $false
   [string] $Comments = $null
 
-  [string] $MonitoringAccount = "SSC-CBS-Reporting@" + $DepartmentNumner + "gc.onmicrosoft.com"
+  [string] $MonitoringAccount = "SSC-CBS-Reporting@" + $DepartmentNumber + "gc.onmicrosoft.com"
 
   $apiUrl = $("https://graph.microsoft.com/beta/users/" + $MonitoringAccount)
 
@@ -25,8 +26,8 @@ function Check-MonitorAccountCreation {
   }
   catch {
     $StatusCode = $_.Exception.Response.StatusCode.value__ 
-    $Comments = "API call returns Error " + $StatusCode + " Please Check if the user exists."
-    $MitigationCommands = "Please Check if the user exists."
+    $Comments = $msgTable.checkUserExistsError -f $StatusCode
+    $MitigationCommands = $msgTable.checkUserExists
   }
        
   $Results = [pscustomobject]@{

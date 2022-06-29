@@ -20,6 +20,7 @@ function Get-UserAuthenticationMethod {
         [string] $ControlName,
         [string] $WorkSpaceID, 
         [string] $workspaceKey, 
+        [hashtable] $msgTable,
         [string] $LogType,
         [string] $ItemName,
         [string] $FirstBreakGlassEmail,
@@ -53,7 +54,7 @@ function Get-UserAuthenticationMethod {
         }
         # MFA is disabled for this user, add a comment
         if (!$mfaEnabled) {
-            $Comments = $Comments + " MFA Authentication is not enabled for " + $BGAcct
+            $Comments = $Comments + $msgTable.mfaDisabledFor -f $BGAcct
         }
 
         # This is the compliance status of the current user

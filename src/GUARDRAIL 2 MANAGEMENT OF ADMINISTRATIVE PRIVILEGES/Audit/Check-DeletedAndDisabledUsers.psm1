@@ -10,7 +10,6 @@ function Check-ADDeletedUsers  {
     [psCustomOBject] $deletedUsersArray = New-Object System.Collections.ArrayList
     [psCustomOBject] $guestUsersArray = New-Object System.Collections.ArrayList
     [bool] $IsCompliant= $false
-    [string] $Comment1= "This user account has been deleted; it has not yet been DELETED PERMANENTLY from Azure Active Directory"
     [string] $Comment2= "This is a GUEST account and needs to be removed from your Azure Active Directory"
 
     $apiUrl= "https://graph.microsoft.com/beta/directory/deleteditems/microsoft.graph.user"
@@ -22,9 +21,9 @@ function Check-ADDeletedUsers  {
           DisplayName = $User.displayName
           Mail = $User.mail
           DeletedDate = $User.deletedDateTime
-          Comments = $Comment1
+          Comments = $msgTable.accountNotDeleted
           ReportTime = $ReportTime
-          ItemName = "ADDeletedUser"
+          ItemName = $msgTable.ADDeletedUser
           }
         $deletedUsersArray.add($Customuser)
         }
@@ -52,7 +51,7 @@ function Check-ADDeletedUsers  {
              Enabled = $User.accountEnabled
              Comments = $Comment2
              ReportTime = $ReportTime
-             ItemName = "ADDisabledUsers"
+             ItemName = $msgTable.ADDisabledUsers
         }
         
         $guestUsersArray.add($Customuser)
