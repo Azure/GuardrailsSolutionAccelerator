@@ -12,10 +12,6 @@ function get-tagValue {
     }
     return ""
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 48163ab (merge from main)
 function get-tagstring ($object) {
     if ($object.Tag.Count -eq 0) {
         $tagstring = "None"
