@@ -167,6 +167,10 @@ Function Add-LogEntry {
         $workspaceKey
     )
 
+    If ($null -eq $moduleName) {
+        $moduleName = "unknown"
+    }
+
     # build log entry object, convert to json
     $entryHash = @{
         "message" = $message
