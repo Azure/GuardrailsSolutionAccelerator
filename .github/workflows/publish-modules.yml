@@ -24,7 +24,7 @@ jobs:
 
           Write-Host "'$($filesChangedInLastCommit.count)' files changed in last commit: `n $filesChangedInLastCommit"
 
-          $moduleManifests = Get-ChildItem -path ./src -Recurse -Include *.psd1
+          $moduleManifests = Get-ChildItem -path ./src -Recurse -Include *.psd1 -Exclude "GR-*"
 
           ForEach ($moduleManifest in $moduleManifests) {
               $moduleCodeFile = Get-Item -Path $moduleManifest.FullName.replace('psd1','psm1')
