@@ -15,7 +15,7 @@ try {
     Connect-AzAccount -Identity -ErrorAction Stop
 }
 catch {
-    #Add-LogEntry 'Critical' "Failed to connect to Azure with the 'Connect-AzAccount' command and '-identity' (MSI) parameter; verify that Azure Automation identity is configured. Error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+    Add-LogEntry 'Critical' "Failed to connect to Azure with the 'Connect-AzAccount' command and '-identity' (MSI) parameter; verify that Azure Automation identity is configured. Error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
     throw "Critical: Failed to connect to Azure with the 'Connect-AzAccount' command and '-identity' (MSI) parameter; verify that Azure Automation identity is configured. Error message: $_"
 }
 $SubID = (Get-AzContext).Subscription.Id
