@@ -11,7 +11,17 @@ function Check-PrivateMarketPlaceCreation {
     
 $IsCompliant=$false 
 $Object = New-Object PSObject
-$PrivateMarketPlace= Get-AzMarketplacePrivateStore
+
+try {
+        [String] $PrivateMarketPlace=  Get-AzMarketplacePrivateStore -ErrorAction Stop  
+}
+catch {
+    Add-LogEntry 'Error' "Failed to execute the 'Get-AzMarketplacePrivateStore'--ensure that the Az.Marketplace module is installed `
+        and up to date; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+    throw "Error: Failed to execute the 'Get-AzMarketplacePrivateStore'--ensure that the Az.Marketplace module is installed `
+        and up to date; returned error message: $_" 
+}
+
 
 if($null -eq $PrivateMarketPlace){
         $Object| Add-Member NoteProperty -Name ComplianceStatus  -Value $IsCompliant

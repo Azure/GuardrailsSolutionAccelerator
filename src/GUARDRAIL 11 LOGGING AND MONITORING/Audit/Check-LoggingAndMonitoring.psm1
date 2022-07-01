@@ -14,7 +14,13 @@ function get-apiLinkedServicesData {
     )
     $token=(Get-AzAccessToken).Token
     $apiUrl="https://management.azure.com/subscriptions/$subscriptionId/resourcegroups/$resourceGroup/providers/Microsoft.OperationalInsights/workspaces/$LAWName/linkedServices?api-version=2020-08-01"
-    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl -Method Get
+    try {
+        $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl -Method Get
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to call Azure Resource Manager REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        Write-Error "Error: Failed to call Azure Resource Manager REST API at URL '$apiURL'; returned error message: $_"
+    }
     return $Data
 }
 function get-tenantDiagnosticsSettings {
@@ -23,7 +29,14 @@ function get-tenantDiagnosticsSettings {
 
     #$apiUrl="https://graph.microsoft.com/beta/auditLogs/directoryAudits"
     $apiUrl = "https://management.azure.com/providers/microsoft.aadiam/diagnosticSettings?api-version=2017-04-01-preview"
-    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl -Method Get
+    try {
+        $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl -Method Get
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to call Azure Resource Manager REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        Write-Error "Error: Failed to call Azure Resource Manager REST API at URL '$apiURL'; returned error message: $_"
+    }
+
     return $data.value.properties
 }
 function Check-LoggingAndMonitoring {
@@ -69,7 +82,16 @@ function Check-LoggingAndMonitoring {
     $IsCompliant=$true
     $MitigationCommands=""
 
-    Select-AzSubscription -Subscription $Subscription
+    try{
+        Select-AzSubscription -Subscription $Subscription -ErrorAction Stop
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to execute the 'Select-AzSubscription' command with subscription ID '$($subscription)'--`
+            ensure you have permissions to the subscription, the ID is correct, and that it exists in this tenant; returned `
+            error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        throw "Error: Failed to execute the 'Select-AzSubscription' command with subscription ID '$($subscription)'--ensure `
+            you have permissions to the subscription, the ID is correct, and that it exists in this tenant; returned error message: $_"
+    }
     $LAW=Get-AzOperationalInsightsWorkspace -Name $LAWName -ResourceGroupName $LAWRG
     if ($null -eq $LAW)
     {
@@ -173,7 +195,16 @@ https://azuremarketplace.microsoft.com/en-us/marketplace/apps/Microsoft.AntiMalw
     $HSubscription=$SecurityLAWResourceId.Split("/")[2]
     if ($Subscription -ne $HSubscription)
     {
-        Select-AzSubscription -Subscription $HSubscription
+        try{
+            Select-AzSubscription -Subscription $HSubscription -ErrorAction Stop
+        }
+        catch {
+            Add-LogEntry 'Error' "Failed to execute the 'Select-AzSubscription' command with subscription ID '$($HSubscription)'--`
+                ensure you have permissions to the subscription, the ID is correct, and that it exists in this tenant; returned `
+                error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+            throw "Error: Failed to execute the 'Select-AzSubscription' command with subscription ID '$($HSubscription)'--ensure `
+                you have permissions to the subscription, the ID is correct, and that it exists in this tenant; returned error message: $_"
+        }
     }
     $LAW=Get-AzOperationalInsightsWorkspace -Name $HealthLAWName -ResourceGroupName $HealthLAWRG
     if ($null -eq $LAW)
