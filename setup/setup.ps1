@@ -19,7 +19,11 @@ param (
         $existingWorkSpaceRG,
         [Parameter(Mandatory=$false)]
         [switch]
-        $skipDeployment
+        $skipDeployment,
+        # alternate custom powershell modules URL -- use for module development/testing
+        [Parameter(mandatory=$false)]
+        [URL]
+        $alternatePSModulesURL
     )
 #region Configuration and initialization
 # test
@@ -185,7 +189,7 @@ catch { Write-error "Error creating resource group. "}
 Write-Output "Deploying solution through bicep."
 try { 
     New-AzResourceGroupDeployment -ResourceGroupName $resourcegroup -Name "guardraildeployment$(get-date -format "ddmmyyHHmmss")" `
-    -TemplateParameterFile .\parameters.json -TemplateFile .\guardrails.bicep -WarningAction SilentlyContinue
+    -TemplateParameterFile .\parameters.json -TemplateFile .\guardrails.bicep -WarningAction SilentlyContinue 
 }
 catch {
     Write-error "Error deploying solution to Azure."
