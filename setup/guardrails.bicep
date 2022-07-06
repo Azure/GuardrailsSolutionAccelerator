@@ -44,13 +44,14 @@ var wbConfig1 ='''
             "id": "618c9321-a3de-4287-b4cf-860a4adf42d4",
             "version": "KqlParameterItem/1.0",
             "name": "RunTime",
-            "label": "Report Time",
+            "label": "Report Time (UTC)",
             "type": 2,
             "isRequired": true,
-            "query": "GuardrailsCompliance_CL\n| summarize by ReportTime_s",
-            "value": "05-07-2022 07:25:21",
+            "query": "GuardrailsCompliance_CL\n| summarize by ReportTime_s\n| order by todatetime(ReportTime_s) desc",
+            "value": "2022-07-06 06:33:16",
             "typeSettings": {
-              "additionalResourceOptions": []
+              "additionalResourceOptions": [],
+              "showDefault": false
             },
             "timeContext": {
               "durationMs": 86400000
@@ -210,6 +211,26 @@ var wbConfig1 ='''
         "value": "gr2"
       },
       "name": "Gr1 - Copy"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "GR2ExternalUsers_CL\r\n| where ReportTime_s == \"{RunTime}\"\r\n| project UserName=DisplayName_s, Email=Mail_s, Roles=RoleDefinitionName_s, Subscription=Subscription_s, Comment=Comments_s",
+        "size": 0,
+        "title": "Guest Accounts",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "gr2"
+      },
+      "name": "query - 16"
     },
     {
       "type": 3,
