@@ -103,11 +103,11 @@
     ]
   },
   {
+    "ModuleName": "Check-DeprecatedAccounts",
     "Control":"Guardrails2",
     "ModuleType": "Builtin",
     "Status": "Enabled",
-     "ModuleName": "Check-ADDeletedUsers",
-     "Script": "Check-ADDeletedUsers -Token $GraphAccessToken -ControlName $msgTable.CtrName2 -ItemName $msgTable.removeDeprecatedAccount -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime"
+     "Script": "Check-DeprecatedUsers -Token $GraphAccessToken -ControlName $msgTable.CtrName2 -ItemName $msgTable.removeDeprecatedAccount -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime"
   },
   {
      "ModuleName": "Check-ExternalUsers",

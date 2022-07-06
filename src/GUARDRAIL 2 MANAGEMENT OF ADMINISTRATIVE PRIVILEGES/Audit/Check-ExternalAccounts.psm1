@@ -18,57 +18,80 @@
             $ReportTime
             )
     
-    [psCustomOBject] $guestUsersArray = New-Object System.Collections.ArrayList
+    [psCustomObject] $guestUsersArray = New-Object System.Collections.ArrayList
     [bool] $IsCompliant= $false
     
-    $apiUrl= "https://graph.microsoft.com/beta/users/"
-    $guestAccountData = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl
+    # Only get the Guests accounts
+    $guestUsers = Get-AzADUser -Filter "usertype eq 'guest'"
 
-    $guestUsers = $guestAccountData.value
-    forEach ($User in $guestUsers) {
-        if($User.userType -eq "Guest") {
-             $Customuser = [pscustomobject] @{
-                DisplayName = $User.displayName
-                Mail = $User.mail
-                Type = $User.userType
-                CreatedDate = $User.createdDateTime
-                Enabled = $User.accountEnabled
-                Comments = $msgTable.guestMustbeRemoved
-                ReportTime = $ReportTime
-                ItemName= $ItemName 
-            }
-            $guestUsersArray.add($Customuser)
-        }     
-    }      
-    # Convert data to JSON format for input in Azure Log Analytics
-    $JSONGuestUsers = ConvertTo-Json -inputObject $guestUsersArray
-    # Use this line to check $JSON output
-   # $JSONGuestUsers > c:\temp\Output\guestUsers.txt
-    #$JSONGuestUsers
-
-    Send-OMSAPIIngestionFile  -customerId $WorkSpaceID -sharedkey $workspaceKey `
-                            -body $JSONGuestUsers -logType "GR2ExternalUsers" -TimeStampField Get-Date 
-
-    if ($guestUsersArray.Count -eq 0) {
-        
+    if ($null -eq $guestUsers) {
+        # There are no Guest users in the tenant
         $IsCompliant= $true
+        $comment = $msgTable.noGuestAccounts
         $MitigationCommands = "N/A"
     }
-    $MitigationCommands = $msgTable.removeGuestAccounts
+    else {
+        # For each guest users, make sure they don't have any role assignment in the Azure Subscriptions
+        $subs=Get-AzSubscription | Where-Object {$_.State -eq 'Enabled'}
+        
+        foreach ($sub in $subs) {
+            $scope="/subscriptions/$($sub.Id)"
+            foreach($user in $guestUsers){
+                $userRoleAssignments = Get-AzRoleAssignment -Scope $scope -ObjectId $user.Id
+
+                if (!$null -eq $userRoleAssignments) {
+                    $Customuser = [PSCustomObject] @{
+                        DisplayName = $user.DisplayName
+                        RoleDefinitionName = $userRoleAssignments.RoleDefinitionName
+                        Subscription = $sub.Name
+                        Mail = $user.mail
+                        Type = $user.userType
+                        CreatedDate = $user.createdDateTime
+                        Enabled = $user.accountEnabled
+                        Comments = $msgTable.guestMustbeRemoved
+                        ItemName= $ItemName 
+                        ReportTime = $ReportTime
+                    }
+                    $guestUsersArray.add($Customuser)
+                }
+            }
+        }
+        if ($guestUsersArray.Count -eq 0) {
+            # Guest accounts don't have any permissions on the Azure subscriptions, it's fine
+            $IsCompliant= $true
+            $comment = $msgTable.guestAccountsNoPermission
+            $MitigationCommands = "N/A"    
+        }
+        else {
+            $IsCompliant= $false
+            $comment = $msgTable.removeGuestAccounts
+            $MitigationCommands = $msgTable.removeGuestAccounts
+
+            # Convert data to JSON format for input in Azure Log Analytics
+            $JSONGuestUsers = ConvertTo-Json -inputObject $guestUsersArray
+            Write-Output "Creating Log Analytics entry for $($guestUsersArray.Count) Guest Users"
+
+            # Add the list of non-compliant users to Log Analytics (different table)
+            Send-OMSAPIIngestionFile  -customerId $WorkSpaceID -sharedkey $workspaceKey `
+                -body $JSONGuestUsers -logType "GR2ExternalUsers" -TimeStampField Get-Date
+        }
+    }
+
     $GuestUserStatus = [PSCustomObject]@{
         ComplianceStatus= $IsCompliant
         ControlName = $ControlName
-        Comments= $msgTable.guestMustbeRemoved
+        Comments= $comment
         ItemName= $ItemName
         ReportTime = $ReportTime
         MitigationCommands = $MitigationCommands
     }
-    $JasoGuestdUserStatus=   ConvertTo-Json -inputObject $GuestUserStatus
 
-    Send-OMSAPIIngestionFile  -customerId $WorkSpaceID -sharedkey $workspaceKey -body $JasoGuestdUserStatus `
-                                -logType $LogType -TimeStampField Get-Date 
+    $logAnalyticsEntry = ConvertTo-Json -inputObject $GuestUserStatus
+        
+    Send-OMSAPIIngestionFile  -customerId $WorkSpaceID -sharedkey $workspaceKey -body $logAnalyticsEntry `
+                                -logType $LogType -TimeStampField Get-Date                 
 
-    }
+}
 
 # SIG # Begin signature block
 # MIInpwYJKoZIhvcNAQcCoIInmDCCJ5QCAQExDzANBglghkgBZQMEAgEFADB5Bgor

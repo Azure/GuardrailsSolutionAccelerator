@@ -37,11 +37,11 @@ bgBothHaveManager =  Les deux comptes BreakGlass ont un gestionnaire
 # GuardRail #2
 removeDeletedAccount = Supprimez définitivement les comptes supprimés
 removeDeprecatedAccount = Supprimez les comptes obsolètes
-removeExternalAccount = Supprimez les comptes invités
 accountNotDeleted = Ce compte d'utilisateur a été supprimé mais n'a pas encore été SUPPRIMÉ DÉFINITIVEMENT d'Azure Active Directory
-guestMustbeRemoved = Ceci est un compte INVITÉ et doit être supprimé de votre Azure Active Directory
-removeGuestAccounts = Supprimez les comptes invités d'Azure AD.
+guestMustbeRemoved = Ce comptes invité ne devraient pas avoir de rôles dans les abonnements Azure
+removeGuestAccounts = Supprimez les comptes invités d'Azure AD ou supprimez leurs permissions dans les abonnements Azure.
 noGuestAccounts = Il n'y a aucun compte invité dans votre tenant
+guestAccountsNoPermission = Il y a des comptes invités dans le tenant mais ils n'ont pas de permissions dans les abonnements Azure.
 ADDeletedUser = Utilisateur AD Supprimé
 ADDisabledUsers = Utilisateur AD désactivé
 noncompliantUsers = Les utilisateurs suivants sont désactivés et ne sont pas synchronisés avec AD: - 

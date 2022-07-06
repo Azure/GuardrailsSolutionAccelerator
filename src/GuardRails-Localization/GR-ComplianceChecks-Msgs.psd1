@@ -37,11 +37,11 @@ bgBothHaveManager = Both BreakGlass accounts have manager
 # GuardRail #2
 removeDeletedAccount = Permanently remove deleted accounts
 removeDeprecatedAccount = Remove deprecated accounts
-removeExternalAccount = Remove External accounts
 accountNotDeleted = This user account has been deleted but has not yet been DELETED PERMANENTLY from Azure Active Directory
-guestMustbeRemoved = This is a GUEST account and needs to be removed from your Azure Active Directory
-removeGuestAccounts = Remove guest accounts from Azure AD.
+guestMustbeRemoved = This GUEST account should not have any role assignment in the Azure subscriptions
+removeGuestAccounts = Remove guest accounts from Azure AD or remove their permissions from the Azure subscriptions.
 noGuestAccounts = There are no GUEST users in your tenant.
+guestAccountsNoPermission = There are Guest accounts in the tenant but they don't have any permission in the subscriptions.
 ADDeletedUser = AD Deleted User
 ADDisabledUsers = AD Disabled Users
 noncompliantUsers = The following Users are disabled and not synchronized with AD: - 
