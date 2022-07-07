@@ -58,15 +58,19 @@
         }
         if ($guestUsersArray.Count -eq 0) {
             # Guest accounts don't have any permissions on the Azure subscriptions, it's fine
+            $IsCompliant= $true
+            $comment = $msgTable.guestAccountsNoPermission
+            $MitigationCommands = "N/A"    
+
             $Customuser = [PSCustomObject] @{
-                DisplayName = $msgTable.noGuestAccounts
+                DisplayName = "N/A"
                 RoleDefinitionName = "N/A"
                 Subscription = "N/A"
                 Mail = "N/A"
                 Type = "N/A"
                 CreatedDate = "N/A"
                 Enabled = "N/A"
-                Comments = $msgTable.noGuestAccounts
+                Comments = "N/A"
                 ItemName= $ItemName 
                 ReportTime = $ReportTime
             }
