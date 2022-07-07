@@ -144,7 +144,7 @@ Function Add-LogEntry {
         # module name
         [Parameter(Mandatory = $false)]
         [string]
-        $moduleName = (Split-Path -Path $MyInvocation.ScriptName -Leaf -ErrorAction SilentlyContinue),
+        $moduleName,
 
         # additional values in hashtable
         [Parameter(Mandatory = $false)]
@@ -167,8 +167,11 @@ Function Add-LogEntry {
         $workspaceKey
     )
 
-    If ($null -eq $moduleName) {
-        $moduleName = "unknown"
+    If ($null -eq $moduleName -and $MyInvocation.ScriptName) {
+        $moduleName = Split-Path -Path $MyInvocation.ScriptName -Leaf
+    }
+    Else {
+        $moduleName = 'unknown'
     }
 
     # build log entry object, convert to json
