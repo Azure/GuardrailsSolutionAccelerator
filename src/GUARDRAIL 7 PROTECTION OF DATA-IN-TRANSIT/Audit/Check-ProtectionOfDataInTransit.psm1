@@ -129,7 +129,7 @@ function Verify-ProtectionDataInTransit {
     #Check management groups
     $objs=get-azmanagementgroup
     [string]$type = "Management Group"  
-    $FinalObjectList=Check-StatusDataInTransit -objList $objs -objType $type -requiredPolicyExemptionIds $grRequiredPolicies -PolicyID $PolicyID `
+    $FinalObjectList+=Check-StatusDataInTransit -objList $objs -objType $type -requiredPolicyExemptionIds $grRequiredPolicies -PolicyID $PolicyID `
     -ReportTime $ReportTime -ItemName $ItemName -LogType $LogType -msgTable $msgTable -ControlName $ControlName
     #Check Subscriptions
     $objs=Get-AzSubscription

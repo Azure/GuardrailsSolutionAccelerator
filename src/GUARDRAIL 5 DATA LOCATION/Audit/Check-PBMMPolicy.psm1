@@ -100,7 +100,7 @@ function Verify-PBMMPolicy {
     $objs=get-azmanagementgroup
     $objs
     $type = "Management Group"  
-    $FinalObjectList=Check-StatusPBMM -objList $objs -objType $type -PolicyID $PolicyID `
+    $FinalObjectList+=Check-StatusPBMM -objList $objs -objType $type -PolicyID $PolicyID `
     -ReportTime $ReportTime -ItemName $ItemName -LogType $LogType -msgTable $msgTable -ControlName $ControlName
     #Check Subscriptions
     $objs=Get-AzSubscription
