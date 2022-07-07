@@ -1,4 +1,4 @@
-function Check-ADDeletedUsers {
+function Check-DeprecatedUsers {
     Param (
         
         [string] $token, 
@@ -16,51 +16,14 @@ function Check-ADDeletedUsers {
     [string] $UComments = $msgTable.noncompliantUsers
     [string] $CComments = $msgTable.compliantComment
 
-
-    [PSCustomObject] $AllUsers = New-Object System.Collections.ArrayList
     [PSCustomObject] $DeprecatedUsers = New-Object System.Collections.ArrayList
-    try {
-        $apiUrl = "https://graph.microsoft.com/beta/users"
 
-        $Users = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl -Method Get
-        foreach ($user in $Users.value) {
-            [void]  $AllUsers.Add($user )
-        }
-        $NextLink = $users.'@odata.nextLink'
-        While ($Null -ne $NextLink) {
-            $Users = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $NextLink 
-            foreach ($user in $Users.value) {
-                [void]  $AllUsers.Add($user )
-            }
-            $NextLink = $users.'@odata.nextLink'
-        }
-    }
-    catch {
+    # A Deprecated account is an account that is disabled and not synchronized to AD
+    $DeprecatedUsers = Get-AzADUser -Filter "accountEnabled eq false" | Where-Object {$null -eq $_.onPremisesSyncEnabled}
 
-        $DepracteUserStatus = [PSCustomObject]@{
-            ComplianceStatus = $IsCompliant
-            ControlName      = $ControlName
-            Comments         = $msgTable.apiError
-            ItemName         = $ItemName
-            MitigationCommands = $msgTable.apiErrorMitigation
-            ReportTime = $ReportTime        
-        }
-        $JasonDepracteUserStatus = ConvertTo-Json -inputObject $DepracteUserStatus
-        
-        Send-OMSAPIIngestionFile  -customerId $WorkSpaceID -sharedkey $workspaceKey `
-            -body $JasonDepracteUserStatus   -logType $LogType -TimeStampField Get-Date  
-
-        Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
-        Write-Error "Error: Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_"
-        
-        }
-
-    if ($AllUsers.count -gt 0) {
-        foreach ($user in $AllUsers) {
-            if (!($user.accountEnabled) -and ($null -eq $user.onPremisesSyncEnabled)) {
-                [void] $DeprecatedUsers.add($user)
-                $UComments =  $UComments + $user.userPrincipalName + "  "
-            }
+    if ($DeprecatedUsers.count -gt 0) {
+        foreach ($user in $DeprecatedUsers) {
+            $UComments =  $UComments + $user.userPrincipalName + "  "
         }
         $Comments = $msgTable.noncompliantComment -f $DeprecatedUsers.count +" "+ $UComments
         $MitigationCommands = $msgTable.mitigationCommands 
@@ -71,7 +34,7 @@ function Check-ADDeletedUsers {
         $MitigationCommands = "N/A"
     }
 
-    $DepracteUserStatus = [PSCustomObject]@{
+    $DeprecatedUserStatus = [PSCustomObject]@{
         ComplianceStatus = $IsCompliant
         ControlName      = $ControlName
         Comments         = $Comments
@@ -80,10 +43,10 @@ function Check-ADDeletedUsers {
         ReportTime = $ReportTime
     }
 
-    $JasonDepracteUserStatus = ConvertTo-Json -inputObject $DepracteUserStatus
+    $JasonDeprecatedUserStatus = ConvertTo-Json -inputObject $DeprecatedUserStatus
         
     Send-OMSAPIIngestionFile  -customerId $WorkSpaceID -sharedkey $workspaceKey `
-        -body $JasonDepracteUserStatus   -logType $LogType -TimeStampField Get-Date  
+        -body $JasonDeprecatedUserStatus   -logType $LogType -TimeStampField Get-Date  
 }
        
 

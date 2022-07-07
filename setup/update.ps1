@@ -33,6 +33,37 @@ if ($env:ACC_TID) {
 else {
     $tenantIDtoAppend="-"+$(((get-azcontext).Tenant).Id).Split("-")[0]
 }
+
+#Tests if logged in:
+$subs = Get-AzSubscription -ErrorAction SilentlyContinue
+if(-not($subs))
+{
+    Connect-AzAccount
+    $subs = Get-AzSubscription -ErrorAction SilentlyContinue
+}
+if ($subs.count -gt 1)
+{
+    Write-output "More than one subscription detected. Current subscription $((get-azcontext).Name)"
+    Write-output "Please select subscription for deployment or Enter to keep current one:"
+    $i=1
+    $subs | ForEach-Object {Write-output "$i - $($_.Name) - $($_.SubscriptionId)";$i++}
+    [int]$selection=Read-Host "Select Subscription number: (1 - $($i-1))"
+}
+else { $selection=0}
+if ($selection -ne 0)
+{
+    if ($selection -gt 0 -and $selection -le ($i-1))  { 
+        Select-AzSubscription -SubscriptionObject $subs[$selection-1]
+    }
+    else {
+        Write-output "Invalid selection. ($selection)"
+        break
+    }
+}
+else {
+    Write-host "Keeping current subscription."
+}
+
 $subscriptionId=(get-azcontext).Subscription.Id
 $resourcegroup=$config.resourcegroup+$tenantIDtoAppend
 $logAnalyticsworkspaceName=$config.logAnalyticsworkspaceName+$tenantIDtoAppend

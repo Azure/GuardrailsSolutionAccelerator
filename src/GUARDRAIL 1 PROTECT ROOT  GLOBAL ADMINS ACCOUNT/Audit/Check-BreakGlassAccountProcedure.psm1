@@ -34,7 +34,23 @@ function Check-ProcedureDocument {
         throw "Error: Failed to run 'Connect-AzAccount' with error: $_"
     }
 
-    #$null= select-Azsubscription -SubscriptionID $SubscriptionID
+  $StorageAccountContext = $StorageAccount.Context
+  try {
+      $blobs=Get-AzStorageBlob -Container $ContainerName -Context $StorageAccountContext
+      if (($blobs | Where-Object {$_.Name -eq $DocumentName}) -ne $null) 
+      { 
+          $IsCompliant = $True
+          $Comments = $msgTable.procedureFileFound -f $DocumentName 
+      }
+      else
+      {
+          $Comments = $msgTable.procedureFileNotFound -f $ItemName, $DocumentName, $Containername, $StorageAccountName
+      }
+  }
+  catch
+  {
+      Write-error "error reading file from storage."
+  }
 
     try {
         $StorageAccount = Get-Azstorageaccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -ErrorAction Stop

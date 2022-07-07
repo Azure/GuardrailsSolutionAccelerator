@@ -26,11 +26,32 @@ function new-customObject {
     }
     return $tempObject
 }
-function Check-StatusPBMM {
+function Test-ExemptionExists {
+    param (
+        [string] $ScopeId,
+        [array]  $requiredPolicyExemptionIds
+    )
+    $exemptionsIds=(Get-AzPolicyExemption -Scope $ScopeId).Properties.PolicyDefinitionReferenceIds | Out-Null
+    if ($null -ne $exemptionsIds)
+    {
+        foreach ($exemptionId in $exemptionsIds)
+        {
+            if ($exemptionId -in $requiredPolicyExemptionIds)
+            {
+                return $true
+            }
+        }
+    }
+    else {
+        return $false
+    }
+    
+}
+function Check-StatusDataInTransit {
     param (
         [System.Object] $objList,
-        [Parameter(Mandatory=$true)]
         [string] $objType, #subscription or management Group
+        [array]  $requiredPolicyExemptionIds,
         [string] $PolicyID,
         [string] $ControlName,
         [string] $ItemName,
@@ -43,7 +64,7 @@ function Check-StatusPBMM {
     [PSCustomObject] $tempObjectList = New-Object System.Collections.ArrayList
     foreach ($obj in $objList)
     {
-        Write-Verbose "Checking $objType : $($obj.Name)"
+        #Write-Output "Checking $objType : $($obj.Name)"
         if ($objType -eq "subscription") {
             $tempId="/subscriptions/$($obj.Id)"
         }
@@ -57,9 +78,17 @@ function Check-StatusPBMM {
             $ComplianceStatus=$false
         }
         else {
-            $ComplianceStatus=$true
-            $Comment=$msgTable.isCompliant 
-            #No exemption exists. All good.
+            #PBMM is applied and not excluded. Testing if specific policies haven't been excluded.
+            if (Test-ExemptionExists -ScopeId $tempId -requiredPolicyExemptionIds $gr7RequiredPolicies)
+            { # boolean, exemption for gr6 required policies exists.
+                $ComplianceStatus=$false
+                $Comment=$msgTable.grexemptionFound -f $obj.Id,$objType
+            }
+            else {
+                $ComplianceStatus=$true
+                $Comment=$msgTable.isCompliant 
+                #No exemption exists. All good.
+            }
         }
         if ($obj.DisplayName -eq $null)
         {
@@ -78,12 +107,11 @@ function Check-StatusPBMM {
     }
     return $tempObjectList
 }
-
-function Verify-PBMMPolicy {
+function Verify-ProtectionDataInTransit {
     param (
             [string] $ControlName,
             [string] $ItemName,
-            [string] $PolicyID, 
+            [string] $PolicyID, `
             [string] $WorkSpaceID,
             [string] $workspaceKey,
             [string] $LogType,
@@ -96,22 +124,20 @@ function Verify-PBMMPolicy {
             $CBSSubscriptionName
     )
     [PSCustomObject] $FinalObjectList = New-Object System.Collections.ArrayList
-    
-    #Check management groups   
+    $grRequiredPolicies=@("FunctionAppShouldOnlyBeAccessibleOverHttps","WebApplicationShouldOnlyBeAccessibleOverHttps", "ApiAppShouldOnlyBeAccessibleOverHttps", "OnlySecureConnectionsToYourRedisCacheShouldBeEnabled","SecureTransferToStorageAccountsShouldBeEnabled")
+    #Check management groups
     $objs=get-azmanagementgroup
-    $objs
-    $type = "Management Group"  
-    $FinalObjectList+=Check-StatusPBMM -objList $objs -objType $type -PolicyID $PolicyID `
+    [string]$type = "Management Group"  
+    $FinalObjectList+=Check-StatusDataInTransit -objList $objs -objType $type -requiredPolicyExemptionIds $grRequiredPolicies -PolicyID $PolicyID `
     -ReportTime $ReportTime -ItemName $ItemName -LogType $LogType -msgTable $msgTable -ControlName $ControlName
     #Check Subscriptions
     $objs=Get-AzSubscription
-    $objs
     [string]$type = "subscription"
-    $FinalObjectList+=Check-StatusPBMM -objList $objs -objType $type -PolicyID $PolicyID `
+    $FinalObjectList+=Check-StatusDataInTransit -objList $objs -objType $type -requiredPolicyExemptionIds $grRequiredPolicies -PolicyID $PolicyID `
     -ReportTime $ReportTime -ItemName $ItemName -LogType $LogType -msgTable $msgTable  -ControlName $ControlName
     
     #Writes data
-    $FinalObjectList # | convertto-json -Depth 3
+    $FinalObjectList #| convertto-json -Depth 3
     if ($FinalObjectList.Count -gt 0)
     {
         $JsonObject = $FinalObjectList | convertTo-Json -Depth 3

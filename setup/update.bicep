@@ -22,6 +22,36 @@ var wbConfig1 ='''
       "name": "Details Title"
     },
     {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "618c9321-a3de-4287-b4cf-860a4adf42d4",
+            "version": "KqlParameterItem/1.0",
+            "name": "RunTime",
+            "label": "Report Time",
+            "type": 2,
+            "isRequired": true,
+            "query": "GuardrailsCompliance_CL\n| summarize by ReportTime_s",
+            "value": "05-07-2022 04:27:10",
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 1"
+    },
+    {
       "type": 11,
       "content": {
         "version": "LinkItem/1.0",
@@ -131,11 +161,11 @@ var wbConfig1 ='''
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 1\"\r\n|project ItemName=ItemName_s, Comments=Comments_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ ')",
+        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 1\" and ReportTime_s == \"{RunTime}\"\r\n|project ItemName=ItemName_s, Comments=Comments_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ ')",
         "size": 0,
         "title": "GR 1",
         "timeContext": {
-          "durationMs": 3600000
+          "durationMs": 86400000
         },
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces"
@@ -151,11 +181,11 @@ var wbConfig1 ='''
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 2\"\r\n|project ItemName=ItemName_s, Comments=Comments_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ ')",
+        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 2\" and ReportTime_s == \"{RunTime}\"\r\n|project ItemName=ItemName_s, Comments=Comments_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ ')",
         "size": 0,
         "title": "GR 2",
         "timeContext": {
-          "durationMs": 3600000
+          "durationMs": 86400000
         },
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces"
@@ -175,7 +205,7 @@ var wbConfig1 ='''
         "size": 0,
         "title": "GR 3",
         "timeContext": {
-          "durationMs": 3600000
+          "durationMs": 86400000
         },
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces"
@@ -191,11 +221,11 @@ var wbConfig1 ='''
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 4\"\r\n|project ItemName=ItemName_s, Comments=Comments_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ ')",
+        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 4\" and ReportTime_s == \"{RunTime}\"\r\n|project ItemName=ItemName_s, Comments=Comments_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ ')",
         "size": 0,
         "title": "GR 4",
         "timeContext": {
-          "durationMs": 3600000
+          "durationMs": 86400000
         },
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces"
@@ -211,11 +241,11 @@ var wbConfig1 ='''
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 5:\" \r\n| project ItemName_s,DisplayName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
+        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 5:\"  and ReportTime_s == \"{RunTime}\"\r\n| project ItemName_s,DisplayName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
         "size": 0,
         "title": "GR 5",
         "timeContext": {
-          "durationMs": 3600000
+          "durationMs": 86400000
         },
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -239,11 +269,11 @@ var wbConfig1 ='''
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 6:\" \r\n| project ItemName_s,DisplayName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
+        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 6:\"  and ReportTime_s == \"{RunTime}\"\r\n| project ItemName_s,DisplayName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
         "size": 0,
         "title": "GR 6",
         "timeContext": {
-          "durationMs": 3600000
+          "durationMs": 86400000
         },
         "exportToExcelOptions": "all",
         "queryType": 0,
@@ -268,11 +298,11 @@ var wbConfig1 ='''
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 7:\" \r\n| project ItemName_s,DisplayName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
+        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 7:\" and ReportTime_s == \"{RunTime}\"\r\n| project ItemName_s,DisplayName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
         "size": 0,
         "title": "GR 7",
         "timeContext": {
-          "durationMs": 3600000
+          "durationMs": 86400000
         },
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -296,11 +326,11 @@ var wbConfig1 ='''
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 8:\" \r\n| project SubnetName=SubnetName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
+        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 8:\"  and ReportTime_s == \"{RunTime}\"\r\n| project SubnetName=SubnetName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
         "size": 0,
         "title": "GR 8",
         "timeContext": {
-          "durationMs": 3600000
+          "durationMs": 86400000
         },
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -324,11 +354,11 @@ var wbConfig1 ='''
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 9:\" \r\n| project ['VNet Name']=VNETName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n",
+        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 9:\"  and ReportTime_s == \"{RunTime}\"\r\n| project ['VNet Name']=VNETName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n",
         "size": 0,
         "title": "GR 9",
         "timeContext": {
-          "durationMs": 3600000
+          "durationMs": 86400000
         },
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces"
@@ -344,11 +374,11 @@ var wbConfig1 ='''
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 10:\" \r\n| project ItemName_s,DisplayName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
+        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 10:\"  and ReportTime_s == \"{RunTime}\"\r\n| project ItemName_s,DisplayName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
         "size": 0,
         "title": "GR 10",
         "timeContext": {
-          "durationMs": 3600000
+          "durationMs": 86400000
         },
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces"
@@ -364,11 +394,11 @@ var wbConfig1 ='''
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 11:\" \r\n| project ItemName_s,DisplayName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
+        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 11:\"  and ReportTime_s == \"{RunTime}\"\r\n| project ItemName_s,DisplayName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
         "size": 0,
         "title": "GR 11",
         "timeContext": {
-          "durationMs": 3600000
+          "durationMs": 86400000
         },
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces"
@@ -384,11 +414,11 @@ var wbConfig1 ='''
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "GuardrailsCompliance_CL\n| where ControlName_s has \"GUARDRAIL 12:\" \n| project SubnetName=SubnetName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\n| sort by Status asc",
+        "query": "GuardrailsCompliance_CL\n| where ControlName_s has \"GUARDRAIL 12:\"  and ReportTime_s == \"{RunTime}\"\n| project SubnetName=SubnetName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\n| sort by Status asc",
         "size": 0,
         "title": "GR12",
         "timeContext": {
-          "durationMs": 3600000
+          "durationMs": 86400000
         },
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
@@ -406,38 +436,82 @@ var wbConfig1 ='''
       "name": "query - 2 - Copy"
     },
     {
-      "type": 3,
+      "type": 12,
       "content": {
-        "version": "KqlItem/1.0",
-        "query": "GuardrailsCompliance_CL\r\n| where ControlName_s has \"GUARDRAIL 12:\" \r\n| project SubnetName=SubnetName_s, Status=iif(tostring(ComplianceStatus_b)==\"True\", '✔️ ', '❌ '), Comments=Comments_s\r\n| sort by Status asc",
-        "size": 0,
-        "title": "GR12",
-        "timeContext": {
-          "durationMs": 3600000
-        },
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "gridSettings": {
-          "sortBy": [
-            {
-              "itemKey": "$gen_count_$gen_group_0",
-              "sortOrder": 1
-            }
-          ]
-        },
-        "sortBy": [
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
           {
-            "itemKey": "$gen_count_$gen_group_0",
-            "sortOrder": 1
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "GuardrailsCompliance_CL \n| extend Status=iif(tostring(ComplianceStatus_b)==\"True\", 'Compliant ', 'Not Compliant'), Title=\"Items by Compliance\"\n| summarize Total=count() by Status, Title",
+              "size": 4,
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "tiles",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Status",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "Total",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "name": "query - 16"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "GuardrailsCompliance_CL\n| summarize by ControlName_s\n| count \n| extend Title=\"Total of Controls\"",
+              "size": 4,
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "tiles",
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "Title",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "Count",
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                "showBorder": true,
+                "size": "auto"
+              }
+            },
+            "name": "query - 15"
           }
         ]
       },
-      "conditionalVisibility": {
-        "parameterName": "selectedTab",
-        "comparison": "isEqualTo",
-        "value": "gr12"
-      },
-      "name": "query - 2 - Copy"
+      "name": "group - 17"
     }
   ],
   "fallbackResourceIds": [

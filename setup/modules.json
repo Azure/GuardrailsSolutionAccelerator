@@ -103,18 +103,18 @@
     ]
   },
   {
+    "ModuleName": "Check-DeprecatedAccounts",
     "Control":"Guardrails2",
     "ModuleType": "Builtin",
     "Status": "Enabled",
-     "ModuleName": "Check-ADDeletedUsers",
-     "Script": "Check-ADDeletedUsers -Token $GraphAccessToken -ControlName $msgTable.CtrName2 -ItemName $msgTable.removeDeprecatedAccount -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime"
+     "Script": "Check-DeprecatedUsers -Token $GraphAccessToken -ControlName $msgTable.CtrName2 -ItemName $msgTable.removeDeprecatedAccount -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime"
   },
   {
      "ModuleName": "Check-ExternalUsers",
      "Control":"Guardrails2",
     "ModuleType": "Builtin",
     "Status": "Enabled",
-     "Script": "Check-ExternalUsers -Token $GraphAccessToken -ControlName $msgTable.CtrName2 -ItemName $msgTable.removeExternalAccount -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime"
+     "Script": "Check-ExternalUsers -Token $GraphAccessToken -ControlName $msgTable.CtrName2 -ItemName $msgTable.removeGuestAccounts -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime"
   },
   {
      "ModuleName": "Check-MonitorAccountCreation",
@@ -135,7 +135,7 @@
      "Control":"Guardrails5",
      "ModuleType": "Builtin",
      "Status": "Enabled",
-     "Script": "Verify-PBMMPolicy -ControlName $msgTable.CtrName5 -ItemName $msgTable.pbmmCompliance -CtrName6 $msgTable.CtrName6 -ItemName6 $msgTable.dataAtRest -CtrName7 $msgTable.CtrName7 -ItemName7 $msgTable.dataInTransit -PolicyID $vars.pbmmpolicyID -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime -CBSSubscriptionName $vars.cbssubscriptionName",
+     "Script": "Verify-PBMMPolicy -ControlName $msgTable.CtrName5 -ItemName $msgTable.pbmmCompliance -PolicyID $vars.pbmmpolicyID -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime -CBSSubscriptionName $vars.cbssubscriptionName",
      "variables":
      [
        {
@@ -148,6 +148,42 @@
       }
      ]
   },
+  {
+    "ModuleName": "Check-ProtectionDataAtRest",
+    "Control":"Guardrails6",
+    "ModuleType": "Builtin",
+    "Status": "Enabled",
+    "Script": "Verify-ProtectionDataAtRest -ControlName $msgTable.CtrName6 -ItemName $msgTable.dataAtRest -PolicyID $vars.pbmmpolicyID -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime -CBSSubscriptionName $vars.cbssubscriptionName",
+    "variables":
+    [
+      {
+        "Name":"cbssubscriptionName",
+        "Value":"CBSSubscriptionName"
+      },
+      {
+       "Name":"pbmmpolicyID",
+       "Value":"PBMMPolicyID"
+     }
+    ]
+ },
+ {
+  "ModuleName": "Check-ProtectionOfDataInTransit",
+  "Control":"Guardrails7",
+  "ModuleType": "Builtin",
+  "Status": "Enabled",
+  "Script": "Verify-ProtectionDataInTransit -ControlName $msgTable.CtrName7 -ItemName $msgTable.dataInTransit -PolicyID $vars.pbmmpolicyID -MsgTable $msgTable -LogType $LogType -WorkSpaceID $WorkSpaceID -WorkspaceKey $WorkspaceKey -ReportTime $ReportTime -CBSSubscriptionName $vars.cbssubscriptionName",
+  "variables":
+  [
+    {
+      "Name":"cbssubscriptionName",
+      "Value":"CBSSubscriptionName"
+    },
+    {
+     "Name":"pbmmpolicyID",
+     "Value":"PBMMPolicyID"
+   }
+  ]
+},
   {
      "ModuleName": "Verify-AllowedLocationPolicy",
      "Control":"Guardrails5",
@@ -199,7 +235,7 @@
      "Control":"Guardrails10",
      "ModuleType": "Builtin",
      "Status": "Enabled",
-     "Script": "Check-CBSSensors -SubscriptionName $vars.CBSSubscriptionName -TenantID $TenantID -ControlName $msgTable.CtrName10 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey -MsgTable $msgTable -ReportTime $ReportTime -LogType $LogType",
+     "Script": "Check-CBSSensors -SubscriptionName $vars.CBSSubscriptionName -TenantID $TenantID -ControlName $msgTable.CtrName10 -WorkSpaceID $WorkSpaceID -workspaceKey $WorkspaceKey -MsgTable $msgTable -ReportTime $ReportTime -LogType $LogType -ItemName $vars.CBSSubscriptionName",
      "variables":
      [
       {

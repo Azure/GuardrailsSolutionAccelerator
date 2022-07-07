@@ -6,7 +6,8 @@ $LogType=Get-AutomationVariable -Name "LogType"
 $KeyVaultName=Get-AutomationVariable -Name "KeyVaultName" 
 $GuardrailWorkspaceIDKeyName=Get-AutomationVariable -Name "GuardrailWorkspaceIDKeyName" 
 $ResourceGroupName=Get-AutomationVariable -Name "ResourceGroupName"
-$ReportTime=(get-date).tostring("dd-MM-yyyy-hh:mm:ss")
+# This is one of the valid date format (ISO-8601) that can be sorted properly in KQL
+$ReportTime=(get-date).tostring("yyyy-MM-dd hh:mm:ss")
 $StorageAccountName=Get-AutomationVariable -Name "StorageAccountName" 
 $Locale=Get-AutomationVariable -Name "GuardRailsLocale" 
 
@@ -46,12 +47,14 @@ Add-LogEntry 'Information' "Starting execution of main runbook" -workspaceGuid $
 [String] $GraphAccessToken = (Get-AzAccessToken -ResourceTypeName MSGraph).Token
 
 # This loads the file containing all of the messages in the culture specified in the automation account variable "GuardRailsLocale"
+Write-Output "Loading messages in $($Locale)" 
 Import-LocalizedData -BindingVariable "msgTable" -UICulture $Locale -FileName "GR-ComplianceChecks-Msgs" -BaseDirectory "C:\Modules\User\GR-ComplianceChecks" #-ErrorAction SilentlyContinue
+Write-Output "Loaded $($msgTable.Count) messages." 
 
 foreach ($module in $modules)
 {
     $NewScriptBlock = [scriptblock]::Create($module.Script)
-    Write-Output "Processing Module $($module.modulename)" -ForegroundColor Yellow
+    Write-Output "Processing Module $($module.modulename)" 
     $variables=$module.variables
     $secrets=$module.secrets
     $localVariables=$module.localVariables
