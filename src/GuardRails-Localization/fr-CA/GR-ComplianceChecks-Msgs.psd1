@@ -24,8 +24,8 @@ bgProcedure = Procédure de compte Break Glass
 bgCreation = Création de compte Break Glass
 bgAccountResponsibility = La responsabilité des comptes bris de glace doit incomber à une personne non technique, de niveau directeur ou supérieur
 bgAccountOwnerContact = Coordonnées des titulaires de compte Break Glass
-procedureFileFound = Fichier {0} trouvé dans le conteneur {1} du compte de stockage {2}.
-procedureFileNotFound = Impossible de trouver le document pour {0}, veuillez créer et télécharger un fichier avec le nom {1} pour confirmer que vous avez terminé l'élément dans le contrôle.
+procedureFileFound = Fichier {0} trouvé.
+procedureFileNotFound = Impossible de trouver le document pour {0}, veuillez créer et télécharger un fichier avec le nom {1} dans le conteneur {2} du compte de stockage {3} pour confirmer que vous avez terminé l'élément dans le contrôle.
 bgAccountsCompliance = {0} Statut de conformité = {1}, {2} Statut de conformité = {3}
 bgAuthenticationMeth =  Méthodes d'authentification 
 bgLicenseNotAssigned = NON ASSIGNÉ
@@ -37,9 +37,10 @@ bgBothHaveManager =  Les deux comptes BreakGlass ont un gestionnaire
 # GuardRail #2
 removeDeletedAccount = Supprimez définitivement les comptes supprimés
 removeDeprecatedAccount = Supprimez les comptes obsolètes
+removeGuestAccounts = Supprimez les comptes invités.
 accountNotDeleted = Ce compte d'utilisateur a été supprimé mais n'a pas encore été SUPPRIMÉ DÉFINITIVEMENT d'Azure Active Directory
 guestMustbeRemoved = Ce comptes invité ne devraient pas avoir de rôles dans les abonnements Azure
-removeGuestAccounts = Supprimez les comptes invités d'Azure AD ou supprimez leurs permissions dans les abonnements Azure.
+removeGuestAccountsComment = Supprimez les comptes invités d'Azure AD ou supprimez leurs permissions dans les abonnements Azure.
 noGuestAccounts = Il n'y a aucun compte invité dans votre tenant
 guestAccountsNoPermission = Il y a des comptes invités dans le tenant mais ils n'ont pas de permissions dans les abonnements Azure.
 ADDeletedUser = Utilisateur AD Supprimé

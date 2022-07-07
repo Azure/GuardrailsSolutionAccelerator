@@ -35,11 +35,11 @@ function Check-ProcedureDocument {
       if (($blobs | Where-Object {$_.Name -eq $DocumentName}) -ne $null) 
       { 
           $IsCompliant = $True
-          $Comments = $msgTable.procedureFileFound -f $DocumentName, $Containername, $StorageAccountName 
+          $Comments = $msgTable.procedureFileFound -f $DocumentName 
       }
       else
       {
-          $Comments = $msgTable.procedureFileNotFound -f $ItemName, $DocumentName
+          $Comments = $msgTable.procedureFileNotFound -f $ItemName, $DocumentName, $Containername, $StorageAccountName
       }
   }
   catch

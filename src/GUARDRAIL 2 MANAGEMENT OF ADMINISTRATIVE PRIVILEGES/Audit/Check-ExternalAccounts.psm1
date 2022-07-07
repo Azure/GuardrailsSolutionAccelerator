@@ -64,7 +64,7 @@
         }
         else {
             $IsCompliant= $false
-            $comment = $msgTable.removeGuestAccounts
+            $comment = $msgTable.removeGuestAccountsComment
             $MitigationCommands = $msgTable.removeGuestAccounts
 
             # Convert data to JSON format for input in Azure Log Analytics
