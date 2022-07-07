@@ -173,6 +173,7 @@ Function Add-LogEntry {
         "moduleName" = $moduleName
         "severity" = $severity
     } + $additionalValues
+    
     $entryJson = ConvertTo-Json -inputObject $entryHash -Depth 20
 
     # log event to Log Analytics workspace by REST API via the OMSIngestionAPI community PS module
