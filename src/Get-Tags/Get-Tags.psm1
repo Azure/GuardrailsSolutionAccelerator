@@ -144,7 +144,7 @@ Function Add-LogEntry {
         # module name
         [Parameter(Mandatory = $false)]
         [string]
-        $moduleName = (if ($MyInvocation.ScriptName) {Split-Path -Path $MyInvocation.ScriptName -Leaf -ErrorAction SilentlyContinue} else {'unknown'}),
+        $moduleName = (Split-Path -Path $MyInvocation.ScriptName -Leaf),
 
         # additional values in hashtable
         [Parameter(Mandatory = $false)]

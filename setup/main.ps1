@@ -41,7 +41,7 @@ catch {
     throw "Failed to retrieve workspace key with secret name '$GuardrailWorkspaceIDKeyName' from KeyVault '$KeyVaultName'. Error message: $_"
 }
 
-Add-LogEntry 'Information' "Starting execution of main runbook" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey
+Add-LogEntry 'Information' "Starting execution of main runbook" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey -moduleName main
 
 # Gets a token for the current sessions (Automation account's MI that can be used by the modules.)
 [String] $GraphAccessToken = (Get-AzAccessToken -ResourceTypeName MSGraph).Token
