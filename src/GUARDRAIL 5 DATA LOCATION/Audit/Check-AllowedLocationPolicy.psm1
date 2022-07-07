@@ -35,6 +35,7 @@ function Verify-AllowedLocationPolicy {
         Add-LogEntry 'Error' "Failed to execute the 'Get-AzManagementGroup' command--verify your permissions and the installion of the Az.Resources module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
         throw "Error: Failed to execute the 'Get-AzManagementGroup' command--verify your permissions and the installion of the Az.Resources module; returned error message: $_"
     }
+    
     foreach ($mg in $managementGroups) {
         $MG = Get-AzManagementGroup -GroupName $mg.Name -Expand -Recurse
         $MGItems.Add($MG)
