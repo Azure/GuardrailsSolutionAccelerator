@@ -30,36 +30,19 @@ function Check-ProcedureDocument {
         Connect-AzAccount -Identity -Subscription  $SubscriptionID -ErrorAction Stop
     }
     catch {
-        Add-LogEntry 'Error' "Failed to run 'Connect-AzAccount' with error: $_"
+        Add-LogEntry 'Error' "Failed to run 'Connect-AzAccount' with error: $_" -workspaceKey $workspaceKey -workspaceGuid $WorkSpaceID
         throw "Error: Failed to run 'Connect-AzAccount' with error: $_"
     }
-
-  $StorageAccountContext = $StorageAccount.Context
-  try {
-      $blobs=Get-AzStorageBlob -Container $ContainerName -Context $StorageAccountContext
-      if (($blobs | Where-Object {$_.Name -eq $DocumentName}) -ne $null) 
-      { 
-          $IsCompliant = $True
-          $Comments = $msgTable.procedureFileFound -f $DocumentName 
-      }
-      else
-      {
-          $Comments = $msgTable.procedureFileNotFound -f $ItemName, $DocumentName, $Containername, $StorageAccountName
-      }
-  }
-  catch
-  {
-      Write-error "error reading file from storage."
-  }
 
     try {
         $StorageAccount = Get-Azstorageaccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -ErrorAction Stop
     }
     catch {
         Add-LogEntry 'Error' "Could not find storage account '$storageAccountName' in resoruce group '$resourceGroupName' of `
-            subscription '$subscriptionId'; verify that the storage account exists and that you have permissions to it. Error: $_"
+            subscription '$subscriptionId'; verify that the storage account exists and that you have permissions to it. Error: $_" `
+            -workspaceKey $workspaceKey -workspaceGuid $WorkSpaceID
         Write-Error "Could not find storage account '$storageAccountName' in resoruce group '$resourceGroupName' of `
-        subscription '$subscriptionId'; verify that the storage account exists and that you have permissions to it. Error: $_"
+            subscription '$subscriptionId'; verify that the storage account exists and that you have permissions to it. Error: $_"
     }
 
     $StorageAccountContext = $StorageAccount.Context
@@ -75,8 +58,10 @@ function Check-ProcedureDocument {
         }
     }
     catch {
-        Add-LogEntry 'Error' "Failed to query storage account '$storageAccountName', container '$containerName', for blobs named '$documentName'. Error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
-        Write-Error "Error: Failed to query storage account '$storageAccountName', container '$containerName', for blobs named '$documentName'. Error message: $_"
+        Add-LogEntry 'Error' "Failed to query storage account '$storageAccountName', container '$containerName', for blobs named `
+            '$documentName'. Error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        Write-Error "Error: Failed to query storage account '$storageAccountName', container '$containerName', for blobs named `
+            '$documentName'. Error message: $_"
     }
 
     $PsObject = [PSCustomObject]@{

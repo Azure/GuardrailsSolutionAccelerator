@@ -62,7 +62,7 @@ function Get-BreakGlassOwnerinformation {
         catch {
             If ($_.exception.response.statuscode.value__ -eq '404') {
                 $BGOwner.ComplianceStatus = $false
-                $BGOwner.ComplianceComments = "BG Account doesn't has a Manager"
+                $BGOwner.ComplianceComments = $msgTable.bgAccountNoManager -f $BGOwner.UserPrincipalName
             }
             Else {
                 Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
