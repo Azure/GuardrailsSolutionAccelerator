@@ -80,6 +80,14 @@ These variables can be used in the module calls without the needs of creating cu
 - $StorageAccountName : Name of the Storage Account.
 - $ReportTime: the unified report time for all modules in each execution.
 
+## Exception Handling
+
+Exception handing in modules is implemented using try/catch blocks and the custom function `Add-LogEntry`. `Add-LogEntry` adds an event to the custom GuardrailsComplianceException table in the Guardrails Log Analytics Workspace. When calling `Add-LogEntry`, keep the following in mind:
+
+- Within a try/catch block, not all errors for a given cmdlet are terminating--add the `-ErrorAction Stop` parameter and value to ensure errors are caught
+- Including the original exception at the end of a custom message ensures that those details are also logged. For example, `-message 'Code execution hit a error. Error message: $_'`
+- `Add-LogEntry` requires a `-workspaceKey` and `-workspaceGUID` parameter be passed, in addition to `-severity` and `-message` parameters
+- `Add-LogEntry` does not terminate the script or write to the host; add either a `Write-Error` or `throw` to log to the host or terminate the script
 
 ## Testing
 
