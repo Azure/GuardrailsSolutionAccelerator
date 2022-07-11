@@ -84,5 +84,12 @@ foreach ($module in $modules)
     }
     $vars
     Write-host $module.Script
-    $NewScriptBlock.Invoke()
+
+    try {
+        $NewScriptBlock.Invoke()
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed invoke the module execution script for module '$($module.moduleName)' with error: $_"
+        Write-Error "Failed invoke the module execution script for module '$($module.moduleName)' with error: $_"
+    }
 }
