@@ -18,7 +18,8 @@ CtrName12 = GUARDRAIL 12: CONFIGURATION DES MARKETPLACES
 # Guardrail 1
 adLicense = Type de licence AD
 mfaEnforcement = Application MFA
-mfaDisabledFor =  L'authentication MFA n'est pas activ/e pour {0} 
+mfaEnabledFor =  L'authentication MFA ne devrait pas être activée pour le compte brise-glace: {0} 
+mfaDisabledFor =  L'authentication MFA n'est pas activée pour {0} 
 m365Assignment = Affectation Microsoft 365 E5
 bgProcedure = Procédure de compte Break Glass
 bgCreation = Création de compte Break Glass

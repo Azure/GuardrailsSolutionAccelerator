@@ -52,13 +52,13 @@ function Get-UserAuthenticationMethod {
                 $mfaEnabled = $true
             }
         }
-        # MFA is disabled for this user, add a comment
-        if (!$mfaEnabled) {
-            $Comments = $Comments + $msgTable.mfaDisabledFor -f $BGAcct
+        # MFA is enabled for this Breakglass account, we don't want that
+        if ($mfaEnabled) {
+            $Comments = $Comments + $msgTable.mfaEnabledFor -f $BGAcct
         }
 
         # This is the compliance status of the current user
-        $isCompliant = $isCompliant -and $mfaEnabled
+        $isCompliant = $isCompliant -and !$mfaEnabled
     }
 
     $PsObject = [PSCustomObject]@{

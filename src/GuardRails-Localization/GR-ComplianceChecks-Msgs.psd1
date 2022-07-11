@@ -18,6 +18,7 @@ CtrName12 = GUARDRAIL 12: CONFIGURATION OF CLOUD MARKETPLACES
 # Guardrail 1
 adLicense = AD License Type
 mfaEnforcement = MFA Enforcement
+mfaEnabledFor =  MFA Authentication should not be enabled for BreakGlass account: {0} 
 mfaDisabledFor =  MFA Authentication is not enabled for {0} 
 m365Assignment = Microsoft 365 E5 Assignment
 bgProcedure = Break Glass account Procedure
