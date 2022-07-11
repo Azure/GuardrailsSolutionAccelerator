@@ -126,12 +126,24 @@ function Verify-ProtectionDataInTransit {
     [PSCustomObject] $FinalObjectList = New-Object System.Collections.ArrayList
     $grRequiredPolicies=@("FunctionAppShouldOnlyBeAccessibleOverHttps","WebApplicationShouldOnlyBeAccessibleOverHttps", "ApiAppShouldOnlyBeAccessibleOverHttps", "OnlySecureConnectionsToYourRedisCacheShouldBeEnabled","SecureTransferToStorageAccountsShouldBeEnabled")
     #Check management groups
-    $objs=get-azmanagementgroup
+    try {
+        $objs = Get-AzManagementGroup -ErrorAction Stop
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to execute the 'Get-AzManagementGroup' command--verify your permissions and the installion of the Az.Resources module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        throw "Error: Failed to execute the 'Get-AzManagementGroup' command--verify your permissions and the installion of the Az.Resources module; returned error message: $_"
+    }
     [string]$type = "Management Group"  
     $FinalObjectList+=Check-StatusDataInTransit -objList $objs -objType $type -requiredPolicyExemptionIds $grRequiredPolicies -PolicyID $PolicyID `
     -ReportTime $ReportTime -ItemName $ItemName -LogType $LogType -msgTable $msgTable -ControlName $ControlName
     #Check Subscriptions
-    $objs=Get-AzSubscription
+    try {
+        $objs = Get-AzSubscription -ErrorAction Stop
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to execute the 'Get-AzSubscription' command--verify your permissions and the installion of the Az.Resources module; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+        throw "Error: Failed to execute the 'Get-AzSubscription' command--verify your permissions and the installion of the Az.Resources module; returned error message: $_"
+    }
     [string]$type = "subscription"
     $FinalObjectList+=Check-StatusDataInTransit -objList $objs -objType $type -requiredPolicyExemptionIds $grRequiredPolicies -PolicyID $PolicyID `
     -ReportTime $ReportTime -ItemName $ItemName -LogType $LogType -msgTable $msgTable  -ControlName $ControlName

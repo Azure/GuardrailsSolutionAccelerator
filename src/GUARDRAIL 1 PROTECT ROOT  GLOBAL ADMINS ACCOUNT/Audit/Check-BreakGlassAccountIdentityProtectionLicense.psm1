@@ -52,26 +52,39 @@ function Get-BreakGlassAccountLicense {
         ID = $null
         LicenseDetails= $msgTable.bgLicenseNotAssigned
     }
-        $BGAccounts.add( $FirstBreakGlassAcct)
-        $BGAccounts.add( $SecondBreakGlassAcct)
+    $BGAccounts.add( $FirstBreakGlassAcct)
+    $BGAccounts.add( $SecondBreakGlassAcct)
         
     
-   foreach ($BGAccount in $BGAccounts){
+    foreach ($BGAccount in $BGAccounts) {
         
-        $apiUrl=  $("https://graph.microsoft.com/beta/users/"+ $BGAccount.UserPrincipalName)
-        $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl -Method Get
-        $BGAccount.ID =  $Data.id
+        $apiUrl = $("https://graph.microsoft.com/beta/users/" + $BGAccount.UserPrincipalName)
 
-        $apiUrl = $("https://graph.microsoft.com/beta/users/"+$BGAccount.ID+"/licenseDetails")
-        $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)"} -Uri $apiUrl -Method Get
+        try {
+            $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl -Method Get -ErrorAction Stop
+        }
+        catch {
+            Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+            Write-Error "Error: Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_"
+        }
+        $BGAccount.ID = $Data.id
 
-        if(($data.value).Length -gt 0 ){
-             $BGAccount.LicenseDetails= ($Data.value).skuPartNumber
+        $apiUrl = $("https://graph.microsoft.com/beta/users/" + $BGAccount.ID + "/licenseDetails")
+
+        try {
+            $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl -Method Get -ErrorAction Stop
+        }
+        catch {
+            Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+            Write-Error "Error: Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_"
+        }
+
+        if (($data.value).Length -gt 0 ) {
+            $BGAccount.LicenseDetails = ($Data.value).skuPartNumber
+        }
     }
-   }
-        if((($FirstBreakGlassAcct.LicenseDetails -match  "EMSPREMIUM") -or ($FirstBreakGlassAcct.LicenseDetails -match  "ENTERPRISEPREMIUM")) -and `
-           (($SecondBreakGlassAcct.LicenseDetails -match "EMSPREMIUM") -or ($SecondBreakGlassAcct.LicenseDetails -match "ENTERPRISEPREMIUM"))){
-
+    if ((($FirstBreakGlassAcct.LicenseDetails -match "EMSPREMIUM") -or ($FirstBreakGlassAcct.LicenseDetails -match "ENTERPRISEPREMIUM")) -and `
+        (($SecondBreakGlassAcct.LicenseDetails -match "EMSPREMIUM") -or ($SecondBreakGlassAcct.LicenseDetails -match "ENTERPRISEPREMIUM"))) {
             $IsCompliant= $true
             $Comments= $FirstBreakGlassAcct.UserPrincipalName + $msgTable.bgAssignedLicense +  $FirstBreakGlassAcct.LicenseDetails +
                        $SecondBreakGlassAcct.UserPrincipalName + $msgTable.bgAssignedLicense +  $SecondBreakGlassAcct.LicenseDetails 
@@ -80,20 +93,20 @@ function Get-BreakGlassAccountLicense {
              $SecondBreakGlassAcct.UserPrincipalName + $msgTable.bgAssignedLicense +  $SecondBreakGlassAcct.LicenseDetails 
    }
 
-   $PsObject = [PSCustomObject]@{
-    ComplianceStatus= $IsCompliant
-    ControlName = $ControlName
-    Comments= $Comments
-    ItemName= $ItemName
-    ReportTime = $ReportTime
- }
- $JsonObject = convertTo-Json -inputObject $PsObject 
+    $PsObject = [PSCustomObject]@{
+        ComplianceStatus = $IsCompliant
+        ControlName      = $ControlName
+        Comments         = $Comments
+        ItemName         = $ItemName
+        ReportTime       = $ReportTime
+    }
+    $JsonObject = convertTo-Json -inputObject $PsObject 
 
- Send-OMSAPIIngestionFile  -customerId $WorkSpaceID `
-                           -sharedkey $workspaceKey `
-                           -body $JsonObject `
-                           -logType $LogType `
-                           -TimeStampField Get-Date 
+    Send-OMSAPIIngestionFile  -customerId $WorkSpaceID `
+        -sharedkey $workspaceKey `
+        -body $JsonObject `
+        -logType $LogType `
+        -TimeStampField Get-Date 
    
 }
 

@@ -28,6 +28,9 @@ function Check-MonitorAccountCreation {
     $StatusCode = $_.Exception.Response.StatusCode.value__ 
     $Comments = $msgTable.checkUserExistsError -f $StatusCode
     $MitigationCommands = $msgTable.checkUserExists
+
+    Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+    Write-Error "Error: Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_"
   }
        
   $Results = [pscustomobject]@{

@@ -21,42 +21,53 @@ function Check-ProcedureDocument {
         [Parameter(Mandatory=$true)]
         [string]
         $ReportTime
-        )
+    )
 
-  [bool] $IsCompliant= $false
-  [string] $Comments = $null
- Connect-AzAccount -Identity -Subscription  $SubscriptionID
+    [bool] $IsCompliant = $false
+    [string] $Comments = $null
 
-  $StorageAccount= Get-Azstorageaccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName
+    try {
+        Connect-AzAccount -Identity -Subscription  $SubscriptionID -ErrorAction Stop
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed to run 'Connect-AzAccount' with error: $_" -workspaceKey $workspaceKey -workspaceGuid $WorkSpaceID
+        throw "Error: Failed to run 'Connect-AzAccount' with error: $_"
+    }
 
-  $StorageAccountContext = $StorageAccount.Context
-  try {
-      $blobs=Get-AzStorageBlob -Container $ContainerName -Context $StorageAccountContext
-      if (($blobs | Where-Object {$_.Name -eq $DocumentName}) -ne $null) 
-      { 
-          $IsCompliant = $True
-          $Comments = $msgTable.procedureFileFound -f $DocumentName 
-      }
-      else
-      {
-          $Comments = $msgTable.procedureFileNotFound -f $ItemName, $DocumentName, $Containername, $StorageAccountName
-      }
-  }
-  catch
-  {
-      Write-error "error reading file from storage."
-  }
+    try {
+        $StorageAccount = Get-Azstorageaccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -ErrorAction Stop
+    }
+    catch {
+        Add-LogEntry 'Error' "Could not find storage account '$storageAccountName' in resoruce group '$resourceGroupName' of `
+            subscription '$subscriptionId'; verify that the storage account exists and that you have permissions to it. Error: $_" `
+            -workspaceKey $workspaceKey -workspaceGuid $WorkSpaceID
+        Write-Error "Could not find storage account '$storageAccountName' in resoruce group '$resourceGroupName' of `
+            subscription '$subscriptionId'; verify that the storage account exists and that you have permissions to it. Error: $_"
+    }
 
-  $PsObject = [PSCustomObject]@{
-        ComplianceStatus= $IsCompliant
-        ControlName = $ControlName
-        ItemName = $ItemName
-        DocumentName = $DocumentName
-        Comments = $Comments
-        ReportTime = $ReportTime
-}
-  $JsonObject= convertTo-Json -inputObject $PsObject 
-            Send-OMSAPIIngestionFile -customerId $WorkSpaceID  -sharedkey $workspaceKey -body $JsonObject -logType $LogType -TimeStampField Get-Date 
+    # check for procedure doc in blob storage account
+    $blobs = Get-AzStorageBlob -Container $ContainerName -Context $StorageAccountContext -Blob $DocumentName -ErrorAction SilentlyContinue
+
+    If ($blobs) {
+        # a blob wit the name $DocumentName was located in the specified storage account
+        $IsCompliant = $True
+        $Comments = $msgTable.procedureFileFound -f $DocumentName, $Containername, $StorageAccountName 
+    }
+    else {
+        # no blob with the name $DocumentName was found in the specified storage account
+        $Comments = $msgTable.procedureFileNotFound -f $ItemName, $DocumentName
+    }
+
+    $PsObject = [PSCustomObject]@{
+        ComplianceStatus = $IsCompliant
+        ControlName      = $ControlName
+        ItemName         = $ItemName
+        DocumentName     = $DocumentName
+        Comments         = $Comments
+        ReportTime       = $ReportTime
+    }
+    $JsonObject = convertTo-Json -inputObject $PsObject 
+    Send-OMSAPIIngestionFile -customerId $WorkSpaceID  -sharedkey $workspaceKey -body $JsonObject -logType $LogType -TimeStampField Get-Date 
 }
 
 # SIG # Begin signature block
