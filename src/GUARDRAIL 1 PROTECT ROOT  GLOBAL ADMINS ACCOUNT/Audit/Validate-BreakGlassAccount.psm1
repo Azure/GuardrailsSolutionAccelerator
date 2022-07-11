@@ -55,22 +55,33 @@ function Get-BreakGlassAccounts {
     Email_address      = $null
     ComplianceStatus   = $false
   }
-    
+  
+  # get 1st break glass account
   try {
-    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $FirstBreakGlassAcct.apiUrl -Method Get
+    $apiURL = $FirstBreakGlassAcct.apiUrl
+    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl -Method Get
    
     if ($Data.userType -eq "Member") {
       $FirstBGAcctExist = $true
     } 
-    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $SecondBreakGlassAcct.apiUrl -Method Get
+  }
+  catch {
+    Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+    Write-Error "Error: Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_"
+  }
+
+  # get 2nd break glass account
+  try {
+    $apiURL = $SecondBreakGlassAcct.apiURL
+    $Data = Invoke-RestMethod -Headers @{Authorization = "Bearer $($token)" } -Uri $apiUrl -Method Get
     
     if ($Data.userType -eq "Member") {
       $SecondBGAcctExist = $true
     } 
   }
   catch {
-    $Statuscode = $_.exception.message
-
+    Add-LogEntry 'Error' "Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
+    Write-Error "Error: Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_"
   }
   $IsCompliant = $FirstBGAcctExist -and $SecondBGAcctExist
 

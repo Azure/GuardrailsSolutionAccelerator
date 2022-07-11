@@ -12,7 +12,12 @@ $StorageAccountName=Get-AutomationVariable -Name "StorageAccountName"
 $Locale=Get-AutomationVariable -Name "GuardRailsLocale" 
 
 # Connects to Azure using the Automation Account's managed identity
-Connect-AzAccount -Identity
+try {
+    Connect-AzAccount -Identity -ErrorAction Stop
+}
+catch {
+    throw "Critical: Failed to connect to Azure with the 'Connect-AzAccount' command and '-identity' (MSI) parameter; verify that Azure Automation identity is configured. Error message: $_"
+}
 $SubID = (Get-AzContext).Subscription.Id
 $tenantID = (Get-AzContext).Tenant.Id
 
@@ -29,7 +34,15 @@ $modules=$modulesList | convertfrom-json
 
 Write-Output "Found $($modules.Count) modules."
 
-[String] $WorkspaceKey = Get-AzKeyVaultSecret -VaultName $KeyVaultName -Name $GuardrailWorkspaceIDKeyName -AsPlainText 
+try {
+    [String] $WorkspaceKey = Get-AzKeyVaultSecret -VaultName $KeyVaultName -Name $GuardrailWorkspaceIDKeyName -AsPlainText -ErrorAction Stop
+}
+catch {
+    throw "Failed to retrieve workspace key with secret name '$GuardrailWorkspaceIDKeyName' from KeyVault '$KeyVaultName'. Error message: $_"
+}
+
+Add-LogEntry 'Information' "Starting execution of main runbook" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey -moduleName main
+
 # Gets a token for the current sessions (Automation account's MI that can be used by the modules.)
 [String] $GraphAccessToken = (Get-AzAccessToken -ResourceTypeName MSGraph).Token
 
@@ -71,7 +84,12 @@ foreach ($module in $modules)
     }
     $vars
     Write-host $module.Script
-    $NewScriptBlock.Invoke()
-}
-break
 
+    try {
+        $NewScriptBlock.Invoke()
+    }
+    catch {
+        Add-LogEntry 'Error' "Failed invoke the module execution script for module '$($module.moduleName)' with error: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey -moduleName main
+        Write-Error "Failed invoke the module execution script for module '$($module.moduleName)' with error: $_"
+    }
+}
