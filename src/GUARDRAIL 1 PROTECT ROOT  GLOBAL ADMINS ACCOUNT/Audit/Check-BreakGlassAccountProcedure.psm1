@@ -45,23 +45,17 @@ function Check-ProcedureDocument {
             subscription '$subscriptionId'; verify that the storage account exists and that you have permissions to it. Error: $_"
     }
 
-    $StorageAccountContext = $StorageAccount.Context
-    try {
-        $Blobs = Get-AzStorageBlob -Container $ContainerName -Context $StorageAccountContext -Blob $DocumentName -ErrorAction Stop
+    # check for procedure doc in blob storage account
+    $blobs = Get-AzStorageBlob -Container $ContainerName -Context $StorageAccountContext -Blob $DocumentName -ErrorAction SilentlyContinue
 
-        If ($blobs) {
-            $IsCompliant = $True
-            $Comments = $msgTable.procedureFileFound -f $DocumentName, $Containername, $StorageAccountName 
-        }
-        else {
-            $Comments = $msgTable.procedureFileNotFound -f $ItemName, $DocumentName
-        }
+    If ($blobs) {
+        # a blob wit the name $DocumentName was located in the specified storage account
+        $IsCompliant = $True
+        $Comments = $msgTable.procedureFileFound -f $DocumentName, $Containername, $StorageAccountName 
     }
-    catch {
-        Add-LogEntry 'Error' "Failed to query storage account '$storageAccountName', container '$containerName', for blobs named `
-            '$documentName'. Error message: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkSpaceKey
-        Write-Error "Error: Failed to query storage account '$storageAccountName', container '$containerName', for blobs named `
-            '$documentName'. Error message: $_"
+    else {
+        # no blob with the name $DocumentName was found in the specified storage account
+        $Comments = $msgTable.procedureFileNotFound -f $ItemName, $DocumentName
     }
 
     $PsObject = [PSCustomObject]@{
