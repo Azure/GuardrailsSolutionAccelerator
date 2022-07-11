@@ -7,7 +7,7 @@ $KeyVaultName=Get-AutomationVariable -Name "KeyVaultName"
 $GuardrailWorkspaceIDKeyName=Get-AutomationVariable -Name "GuardrailWorkspaceIDKeyName" 
 $ResourceGroupName=Get-AutomationVariable -Name "ResourceGroupName"
 # This is one of the valid date format (ISO-8601) that can be sorted properly in KQL
-$ReportTime=(get-date).tostring("yyyy-MM-dd hh:mm:ss")
+$ReportTime=(get-date).tostring("yyyy-MM-dd HH:mm:ss")
 $StorageAccountName=Get-AutomationVariable -Name "StorageAccountName" 
 $Locale=Get-AutomationVariable -Name "GuardRailsLocale" 
 
