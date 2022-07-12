@@ -65,6 +65,7 @@ All named resources will have the first 6 characters of the tenant Id appended t
 |CBSSubscriptionName|Subscription Id containing the CBS solution. This subscription will be used to find the required components. **This subscription will also be excluded from checks.**|
 |SecurityLAWResourceId|Full resource Id of the Log analytics workspace used for Security (/subscriptions/...)|
 |HealthLAWResourceId|Full resource Id of the Log analytics workspace used for resource Health (/subscriptions/...)|
+|Locale|Language of the messages in the solution. At the moment, supported languages are english or french and default is english (en-CA or fr-CA)|
 
 Save the file and exit VSCode.
 
