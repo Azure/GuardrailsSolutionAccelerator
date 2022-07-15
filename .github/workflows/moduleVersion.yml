@@ -72,8 +72,8 @@ jobs:
       - name: commit changes
         run: |
           git branch
-          git config --global user.name 'Matthew Bratschun'
-          git config --global user.email 'mbratschun@microsoft.com'
+          git config --global user.name 'Automated GitHub Action'
+          git config --global user.email 'no-reply@github.com'
 
           git add -A
           git commit -am "incremented changed module versions: $(git log -1 --pretty=%B)"
