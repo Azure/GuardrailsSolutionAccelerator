@@ -38,7 +38,13 @@ jobs:
           $moduleChangedFileList = $files | where-object { $_ -match '\.psm1$'}
 
           ForEach ($moduleChangedFile in $moduleChangedFileList) {
-              $moduleManifestPath = Get-Item -Path ($moduleChangedFile -replace '\.psm1$','.psd1')
+
+              try {
+                $moduleManifestPath = Get-Item -Path ($moduleChangedFile -replace '\.psm1$','.psd1') -ErrorAction Stop
+              }
+              catch {
+                Write-Error "Error locating .psd1 file for module '$moduleChangedFile'. This file should reside in the same directory as the psm1."
+              }
               
               $moduleManifest = Get-Item $moduleManifestPath
               $content = Get-Content $moduleManifest
