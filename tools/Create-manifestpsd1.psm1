@@ -1,4 +1,4 @@
-#New-ModuleManifest -Path .\Check-BreackGlassAccountOwnersInformation.psd1 -Author "FastTrack for Azure Team" -CompanyName Microsoft -ModuleVersion 1.0.0 -Tags "GOC 30 days Guardrails"
+#New-ModuleManifest -Path .\Check-BreakGlassAccountOwnersInformation.psd1 -Author "FastTrack for Azure Team" -CompanyName Microsoft -ModuleVersion 1.0.0 -Tags "GOC 30 days Guardrails"
 function Generate-Manifest {
     [CmdletBinding()]
     param (
