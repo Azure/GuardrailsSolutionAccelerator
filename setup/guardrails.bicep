@@ -711,10 +711,10 @@ resource module12 'modules' ={
     }
   }
 resource module13 'modules' ={
-    name: 'Get-Tags'
+    name: 'GR-Utilities'
     properties: {
       contentLink: {
-        uri: '${CustomModulesBaseURL}/Get-Tags.zip'
+        uri: '${CustomModulesBaseURL}/GR-Utilities.zip'
         version: '1.1.2'
       }
     }
