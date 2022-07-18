@@ -10,7 +10,7 @@ Implementing the required GC Cloud Guardrails can take a considerable amount of 
 
 
 ## Architecture
-1. The solution is deployment from the Azure Portal's cloud shell. After cloning the repository, some configuration may be done to the provided config.json file. Once triggered, the setup will deploy all the required components.
+1. The solution is deployed from the Azure Portal's cloud shell. After cloning the repository, some configuration may be done to the provided config.json file. Once triggered, the setup will deploy all the required components.
 
 2. Azure Automation will trigger the main runbook every hour. It will fetch information from multiple sources (AAD, Azure Resources, Storage Account).
 
