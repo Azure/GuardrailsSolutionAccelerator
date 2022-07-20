@@ -41,7 +41,8 @@ catch {
     throw "Failed to retrieve workspace key with secret name '$GuardrailWorkspaceIDKeyName' from KeyVault '$KeyVaultName'. Error message: $_"
 }
 
-Add-LogEntry 'Information' "Starting execution of main runbook" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey -moduleName main
+Add-LogEntry 'Information' "Starting execution of main runbook" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey -moduleName main `
+    -additionalValues @{reportTime=$ReportTime; locale=$locale}
 
 # Gets a token for the current sessions (Automation account's MI that can be used by the modules.)
 [String] $GraphAccessToken = (Get-AzAccessToken -ResourceTypeName MSGraph).Token
@@ -93,3 +94,6 @@ foreach ($module in $modules)
         Write-Error "Failed invoke the module execution script for module '$($module.moduleName)' with error: $_"
     }
 }
+
+Add-LogEntry 'Information' "Completed execution of main runbook" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey -moduleName main `
+    -additionalValues @{reportTime=$ReportTime; locale=$locale}
