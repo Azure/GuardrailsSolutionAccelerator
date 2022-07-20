@@ -90,8 +90,9 @@ foreach ($module in $modules)
         $NewScriptBlock.Invoke()
     }
     catch {
-        Add-LogEntry 'Error' "Failed invoke the module execution script for module '$($module.moduleName)' with error: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey -moduleName main
-        Write-Error "Failed invoke the module execution script for module '$($module.moduleName)' with error: $_"
+        Add-LogEntry 'Error' "Failed invoke the module execution script for module '$($module.moduleName)', script '$($module.script)' `
+            with error: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey -moduleName main
+        Write-Error "Failed invoke the module execution script for module '$($module.moduleName)', script '$($module.script)' with error: $_"
     }
 }
 
