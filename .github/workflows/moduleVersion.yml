@@ -105,6 +105,7 @@ jobs:
                   Write-Host "Neither the manifest '$($moduleManifest.FullName.toLower())' or script file '$($moduleCodeFile.FullName.ToLower())' for module '$($moduleManifest.BaseName)' was changed, skipping zipping..."
               }
           }
+        shell: pwsh
 
       - name: commit changes
         run: |
