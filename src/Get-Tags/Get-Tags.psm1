@@ -184,7 +184,6 @@ Function Add-LogEntry {
         -TimeStampField Get-Date 
 
 }
-
 # endregion
    
 # SIG # Begin signature block
