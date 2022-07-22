@@ -28,7 +28,8 @@ jobs:
           format: json
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Increment changed module versions
+        id: module_versions
         run: |
           # Automatically increment the 'build' version numbers on a PS module file
           
@@ -39,7 +40,13 @@ jobs:
           $moduleChangedFileList = $files | where-object { $_ -match '\.psm1$'}
 
           ForEach ($moduleChangedFile in $moduleChangedFileList) {
-              $moduleManifestPath = Get-Item -Path ($moduleChangedFile -replace '\.psm1$','.psd1')
+
+              try {
+                $moduleManifestPath = Get-Item -Path ($moduleChangedFile -replace '\.psm1$','.psd1') -ErrorAction Stop
+              }
+              catch {
+                Write-Error "Error locating .psd1 file for module '$moduleChangedFile'. This file should reside in the same directory as the psm1."
+              }
               
               $moduleManifest = Get-Item $moduleManifestPath
               $content = Get-Content $moduleManifest
@@ -69,9 +76,18 @@ jobs:
                   }
               }
           }
+
+          # output whether modules were changed
+          If ($moduleChangedFileList.count -eq 0) {
+            Write-Host "::set-output name=versions_changed::$($true)"
+          }
+          Else {
+             Write-Host "::set-output name=versions_changed::$($false)"
+          }
         shell: pwsh
 
       - name: Zip updated modules
+        id: zip_modules
         run: |
           Write-Host "Executing powershell script in '$pwd'"
           
@@ -92,6 +108,7 @@ jobs:
             Write-Error "Failed to find file path '$file' with Get-Item -Path $file"
           }
 
+          $zipsChanged = $false
           ForEach ($moduleManifest in $changedModuleManifestFilesObjs) {
               $moduleCodeFile = Get-Item -Path $moduleManifest.FullName.replace('psd1','psm1')
               
@@ -100,19 +117,28 @@ jobs:
 
                 $destPath = "./psmodules/$($moduleManifest.BaseName).zip"
                 Compress-Archive -Path $moduleManifest.Directory/* -DestinationPath $destPath -Update
+
+                $zipsChanged = $true
               }
               Else {
                   Write-Host "Neither the manifest '$($moduleManifest.FullName.toLower())' or script file '$($moduleCodeFile.FullName.ToLower())' for module '$($moduleManifest.BaseName)' was changed, skipping zipping..."
               }
           }
+
+          # output whether modules were changed
+          Write-Host "::set-output name=zips_changed::$($zipsChanged)"
+
         shell: pwsh
 
       - name: commit changes
         run: |
-          git branch
-          git config --global user.name 'Matthew Bratschun'
-          git config --global user.email 'mbratschun@microsoft.com'
+          If ([boolean]'${{ steps.module_versions.versions_changed }}' -or [boolean]'${{ steps.zip_modules.zips_changed }}' ) {
+            git branch
+            git config --global user.name 'Automated GitHub Action'
+            git config --global user.email 'no-reply@github.com'
 
-          git add -A
-          git commit -am "incremented changed module versions: $(git log -1 --pretty=%B)"
-          git push
+            git add -A
+            git commit -am "incremented changed module versions: $(git log -1 --pretty=%B)"
+            git push
+          }
+        shell: pwsh
