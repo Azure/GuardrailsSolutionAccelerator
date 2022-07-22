@@ -48,7 +48,7 @@ function Get-ADLicenseType {
         Write-Error "Error: Failed to call Microsoft Graph REST API at URL '$apiURL'; returned error message: $_"
     }
     $subscribedSkus = $Data.Value
-    $servicePlans=  $subscribedSkus.servicePlans
+    $servicePlans = $subscribedSkus.servicePlans
     #https://docs.microsoft.com/en-us/azure/active-directory/enterprise-users/licensing-service-plan-reference
     foreach ($servicePlan in $servicePlans) {
         if(($servicePlan.servicePlanName -eq "AAD_PREMIUM_P2") -or`

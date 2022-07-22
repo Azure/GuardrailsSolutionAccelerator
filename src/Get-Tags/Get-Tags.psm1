@@ -124,8 +124,7 @@ function read-blob {
         Context     = $Context
     }
     Get-AzStorageBlobContent @blobParams
-      
-
+    
 }
 
 Function Add-LogEntry {

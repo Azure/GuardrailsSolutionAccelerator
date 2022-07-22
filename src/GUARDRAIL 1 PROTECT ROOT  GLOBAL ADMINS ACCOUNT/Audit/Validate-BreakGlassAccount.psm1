@@ -95,7 +95,7 @@ function Get-BreakGlassAccounts {
 
   $JsonObject = convertTo-Json -inputObject $PsObject 
 
-  Send-OMSAPIIngestionFile  -customerId $WorkSpaceID `
+  Send-OMSAPIIngestionFile -customerId $WorkSpaceID `
     -sharedkey $workspaceKey `
     -body $JsonObject `
     -logType $LogType `
