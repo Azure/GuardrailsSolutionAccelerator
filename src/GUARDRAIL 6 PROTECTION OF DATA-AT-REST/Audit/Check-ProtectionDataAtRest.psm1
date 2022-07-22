@@ -64,7 +64,7 @@ function Check-StatusDataAtRest {
     [PSCustomObject] $tempObjectList = New-Object System.Collections.ArrayList
     foreach ($obj in $objList)
     {
-        #Write-Output "Checking $objType : $($obj.Name)"
+
         if ($objType -eq "subscription")
         {$tempId="/subscriptions/$($obj.Id)"}
         else {
