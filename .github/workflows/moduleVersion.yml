@@ -112,7 +112,7 @@ jobs:
           ForEach ($moduleManifest in $changedModuleManifestFilesObjs) {
               $moduleCodeFile = Get-Item -Path $moduleManifest.FullName.replace('psd1','psm1')
               
-              If ($filesChangedInLastCommit -icontains $moduleManifest.FullName.toLower() -or $filesChangedInLastCommit -icontains $moduleCodeFile.FullName.ToLower()) {
+              If ($changedModuleManifestFilesObjs.FullName -icontains $moduleManifest.FullName -or $changedModuleManifestFilesObjs.FullName -icontains $moduleCodeFile.FullName) {
                 Write-Host "Module '$($moduleManifest.BaseName)' was changed, zipping module files..."
 
                 $destPath = "./psmodules/$($moduleManifest.BaseName).zip"
@@ -132,7 +132,7 @@ jobs:
 
       - name: commit changes
         run: |
-          If ([boolean]'${{ steps.module_versions.versions_changed }}' -or [boolean]'${{ steps.zip_modules.zips_changed }}' ) {
+          If ([boolean]'${{ steps.module_versions.outputs.versions_changed }}' -or [boolean]'${{ steps.zip_modules.outputs.zips_changed }}' ) {
             git branch
             git config --global user.name 'Automated GitHub Action'
             git config --global user.email 'no-reply@github.com'

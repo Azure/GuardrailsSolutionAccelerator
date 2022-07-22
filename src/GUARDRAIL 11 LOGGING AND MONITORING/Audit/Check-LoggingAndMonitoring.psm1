@@ -313,7 +313,7 @@ https://docs.microsoft.com/en-us/azure/automation/how-to/region-mappings
         ReportTime = $ReportTime
         MitigationCommands=$MitigationCommands
     }
-    $JSON= ConvertTo-Json -inputObject $object
+    $JSON = ConvertTo-Json -inputObject $object
 
     Send-OMSAPIIngestionFile  -customerId $WorkSpaceID `
     -sharedkey $workspaceKey `
