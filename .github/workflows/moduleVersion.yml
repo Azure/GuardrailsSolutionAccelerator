@@ -79,10 +79,10 @@ jobs:
 
           # output whether modules were changed
           If ($moduleChangedFileList.count -eq 0) {
-            Write-Host "::set-output name=versions_changed::$($true)"
+            Write-Host "::set-output name=versions_changed::$($false)"
           }
           Else {
-             Write-Host "::set-output name=versions_changed::$($false)"
+             Write-Host "::set-output name=versions_changed::$($true)"
           }
         shell: pwsh
 
