@@ -90,7 +90,8 @@ foreach ($module in $modules)
         $NewScriptBlock.Invoke()
     }
     catch {
-        $sanitizedScriptblock = $($ExecutionContext.InvokeCommand.ExpandString(($module.script -replace '$workspaceKey','***')))
+        $sanitizedScriptblock = $($ExecutionContext.InvokeCommand.ExpandString(($module.script -ireplace '$workspaceKey','***')))
+        
         Add-LogEntry 'Error' "Failed invoke the module execution script for module '$($module.moduleName)', script '$sanitizedScriptblock' `
             with error: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey -moduleName main
         Write-Error "Failed invoke the module execution script for module '$($module.moduleName)', script '$sanitizedScriptblock' with error: $_"
