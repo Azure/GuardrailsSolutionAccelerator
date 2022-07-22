@@ -86,18 +86,14 @@ foreach ($module in $modules)
     $vars
     Write-host $module.Script
 
-    If ([string]::IsNullOrEmpty($ReportTime)) {
-        Add-LogEntry 'Error' "ReportTime variable is null or empty" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey -moduleName main
-        throw "ReportTime variable is null, exiting..."
-    }
-
     try {
         $NewScriptBlock.Invoke()
     }
     catch {
-        Add-LogEntry 'Error' "Failed invoke the module execution script for module '$($module.moduleName)', script '$($module.script)' `
+        $sanitizedScriptblock = $($ExecutionContext.InvokeCommand.ExpandString(($module.script -replace '$workspaceKey','***')))
+        Add-LogEntry 'Error' "Failed invoke the module execution script for module '$($module.moduleName)', script '$sanitizedScriptblock' `
             with error: $_" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey -moduleName main
-        Write-Error "Failed invoke the module execution script for module '$($module.moduleName)', script '$($module.script)' with error: $_"
+        Write-Error "Failed invoke the module execution script for module '$($module.moduleName)', script '$sanitizedScriptblock' with error: $_"
     }
 }
 
