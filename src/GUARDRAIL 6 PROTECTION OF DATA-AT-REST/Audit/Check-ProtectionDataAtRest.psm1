@@ -135,8 +135,7 @@ function Verify-ProtectionDataAtRest {
             Az.Resources module; returned error message: $_"
     }
     [string]$type = "Management Group"  
-    $ObjectList+=Check-StatusDataAtRest -objList $objs -objType $type -requiredPolicyExemptionIds $grRequiredPolicies -PolicyID $PolicyID `
-    -ReportTime $ReportTime -ItemName $ItemName -LogType $LogType -msgTable $msgTable -ControlName $ControlName
+    $ObjectList+=Check-StatusDataAtRest -objList $objs -objType $type -requiredPolicyExemptionIds $grRequiredPolicies -PolicyID $PolicyID -ReportTime $ReportTime -ItemName $ItemName -LogType $LogType -msgTable $msgTable -ControlName $ControlName
     #Check Subscriptions
     try {
         $objs = Get-AzSubscription -ErrorAction Stop
@@ -148,8 +147,7 @@ function Verify-ProtectionDataAtRest {
             Az.Resources module; returned error message: $_"
     }
     [string]$type = "subscription"
-    $ObjectList+=Check-StatusDataAtRest -objList $objs -objType $type -requiredPolicyExemptionIds $grRequiredPolicies -PolicyID $PolicyID `
-    -ReportTime $ReportTime -ItemName $ItemName -LogType $LogType -msgTable $msgTable  -ControlName $ControlName
+    $ObjectList+=Check-StatusDataAtRest -objList $objs -objType $type -requiredPolicyExemptionIds $grRequiredPolicies -PolicyID $PolicyID -ReportTime $ReportTime -ItemName $ItemName -LogType $LogType -msgTable $msgTable  -ControlName $ControlName
     
     #Writes data
     $ObjectList #| convertto-json -Depth 3
