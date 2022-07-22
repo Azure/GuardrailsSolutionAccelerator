@@ -5,7 +5,7 @@ name: Increment Module Versions
 # Controls when the workflow will run
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "module-version-workflow" ]
 
 
 
@@ -69,6 +69,42 @@ jobs:
               }
           }
         shell: pwsh
+
+      - name: Zip updated modules
+        run: |
+          Write-Host "Executing powershell script in '$pwd'"
+          
+          $files = '${{ steps.files.outputs.modified }}' | ConvertFrom-Json
+          Write-Host "Total '$($files.count)' files changed in last commit"
+
+          $changedModuleManifestFiles = $files | Where-Object {$_ -like '*.psm1'}
+          Write-Host "'$($changedModuleManifestFiles.count)' module manifest files changed in last commit"
+
+          try {
+            $changedModuleManifestFilesObjs = @()
+
+            ForEach ($file in $changedModuleManifestFiles) {
+              $changedModuleManifestFilesObjs += Get-Item -Path $file -ErrorAction Stop
+            }
+          }
+          catch {
+            Write-Error "Failed to find file path '$file' with Get-Item -Path $file"
+          }
+
+          ForEach ($moduleManifest in $changedModuleManifestFilesObjs) {
+              $moduleCodeFile = Get-Item -Path $moduleManifest.FullName.replace('psd1','psm1')
+              
+              If ($filesChangedInLastCommit -icontains $moduleManifest.FullName.toLower() -or $filesChangedInLastCommit -icontains $moduleCodeFile.FullName.ToLower()) {
+                Write-Host "Module '$($moduleManifest.BaseName)' was changed, zipping module files..."
+
+                $destPath = "./psmodules/$($moduleManifest.BaseName).zip"
+                Compress-Archive -Path $moduleManifest.Directory/* -DestinationPath $destPath -Update
+              }
+              Else {
+                  Write-Host "Neither the manifest '$($moduleManifest.FullName.toLower())' or script file '$($moduleCodeFile.FullName.ToLower())' for module '$($moduleManifest.BaseName)' was changed, skipping zipping..."
+              }
+          }
+
       - name: commit changes
         run: |
           git branch
