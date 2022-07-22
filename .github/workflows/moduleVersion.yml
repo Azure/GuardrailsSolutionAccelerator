@@ -1,14 +1,11 @@
 # This workflow increments the build version of changed PS modules files in the associated PR
 
-name: Increment Module Versions
+name: Increment Module Versions and Zip Changed Modules
 
 # Controls when the workflow will run
 on:
   pull_request:
     branches: [ "main" ]
-
-  push:
-    branches: [ "module-version-workflow" ]
 
 jobs:
   # This workflow contains a single job called "build"
