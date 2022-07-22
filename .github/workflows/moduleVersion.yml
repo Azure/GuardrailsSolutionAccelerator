@@ -1,13 +1,14 @@
 # This workflow increments the build version of changed PS modules files in the associated PR
 
-name: Increment Module Versions
+name: Increment Module Versions and Zip Changed Modules
 
 # Controls when the workflow will run
 on:
   pull_request:
     branches: [ "main" ]
 
-
+  push:
+    branches: [ "mbratschun-fix-multiline-commands" ]
 
 jobs:
   # This workflow contains a single job called "build"
@@ -27,7 +28,8 @@ jobs:
           format: json
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Increment changed module versions
+        id: module_versions
         run: |
           # Automatically increment the 'build' version numbers on a PS module file
           
@@ -74,13 +76,69 @@ jobs:
                   }
               }
           }
+
+          # output whether modules were changed
+          If ($moduleChangedFileList.count -eq 0) {
+            Write-Host "::set-output name=versions_changed::$($false)"
+          }
+          Else {
+             Write-Host "::set-output name=versions_changed::$($true)"
+          }
         shell: pwsh
+
+      - name: Zip updated modules
+        id: zip_modules
+        run: |
+          Write-Host "Executing powershell script in '$pwd'"
+          
+          $files = '${{ steps.files.outputs.modified }}' | ConvertFrom-Json
+          Write-Host "Total '$($files.count)' files changed in last commit"
+
+          $changedModuleManifestFiles = $files | Where-Object {$_ -like '*.psm1'}
+          Write-Host "'$($changedModuleManifestFiles.count)' module manifest files changed in last commit"
+
+          try {
+            $changedModuleManifestFilesObjs = @()
+
+            ForEach ($file in $changedModuleManifestFiles) {
+              $changedModuleManifestFilesObjs += Get-Item -Path $file -ErrorAction Stop
+            }
+          }
+          catch {
+            Write-Error "Failed to find file path '$file' with Get-Item -Path $file"
+          }
+
+          $zipsChanged = $false
+          ForEach ($moduleManifest in $changedModuleManifestFilesObjs) {
+              $moduleCodeFile = Get-Item -Path $moduleManifest.FullName.replace('psd1','psm1')
+              
+              If ($changedModuleManifestFilesObjs.FullName -icontains $moduleManifest.FullName -or $changedModuleManifestFilesObjs.FullName -icontains $moduleCodeFile.FullName) {
+                Write-Host "Module '$($moduleManifest.BaseName)' was changed, zipping module files..."
+
+                $destPath = "./psmodules/$($moduleManifest.BaseName).zip"
+                Compress-Archive -Path "$($moduleManifest.Directory)/*" -DestinationPath $destPath -Update
+
+                $zipsChanged = $true
+              }
+              Else {
+                  Write-Host "Neither the manifest '$($moduleManifest.FullName.toLower())' or script file '$($moduleCodeFile.FullName.ToLower())' for module '$($moduleManifest.BaseName)' was changed, skipping zipping..."
+              }
+          }
+
+          # output whether modules were changed
+          Write-Host "::set-output name=zips_changed::$($zipsChanged)"
+
+        shell: pwsh
+
       - name: commit changes
         run: |
-          git branch
-          git config --global user.name 'Automated GitHub Action'
-          git config --global user.email 'no-reply@github.com'
+          If ([boolean]'${{ steps.module_versions.outputs.versions_changed }}' -or [boolean]'${{ steps.zip_modules.outputs.zips_changed }}' ) {
+            git branch
+            git config --global user.name 'Automated GitHub Action'
+            git config --global user.email 'no-reply@github.com'
 
-          git add -A
-          git commit -am "incremented changed module versions: $(git log -1 --pretty=%B)"
-          git push
+            git add -A
+            git commit -am "incremented changed module versions: $(git log -1 --pretty=%B)"
+            git push
+          }
+        shell: pwsh
