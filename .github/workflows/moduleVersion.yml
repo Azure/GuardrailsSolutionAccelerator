@@ -116,7 +116,7 @@ jobs:
                 Write-Host "Module '$($moduleManifest.BaseName)' was changed, zipping module files..."
 
                 $destPath = "./psmodules/$($moduleManifest.BaseName).zip"
-                Compress-Archive -Path $moduleManifest.Directory/* -DestinationPath $destPath -Update
+                Compress-Archive -Path "$($moduleManifest.Directory)/*" -DestinationPath $destPath -Update
 
                 $zipsChanged = $true
               }
