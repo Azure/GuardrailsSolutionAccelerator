@@ -86,6 +86,11 @@ foreach ($module in $modules)
     $vars
     Write-host $module.Script
 
+    If ([string]::IsNullOrEmpty($ReportTime)) {
+        Add-LogEntry 'Error' "ReportTime variable is null or empty" -workspaceGuid $WorkSpaceID -workspaceKey $WorkspaceKey -moduleName main
+        throw "ReportTime variable is null, exiting..."
+    }
+
     try {
         $NewScriptBlock.Invoke()
     }
