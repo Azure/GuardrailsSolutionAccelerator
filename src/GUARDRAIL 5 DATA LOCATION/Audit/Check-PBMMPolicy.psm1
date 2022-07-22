@@ -119,8 +119,7 @@ function Verify-PBMMPolicy {
     }
     $objs
     [string]$type = "subscription"
-    $FinalObjectList += Check-StatusPBMM -objList $objs -objType $type -PolicyID $PolicyID -ReportTime $ReportTime `
-        -ItemName $ItemName -LogType $LogType -msgTable $msgTable  -ControlName $ControlName
+    $FinalObjectList+=Check-StatusPBMM -objList $objs -objType $type -PolicyID $PolicyID -ReportTime $ReportTime -ItemName $ItemName -LogType $LogType -msgTable $msgTable  -ControlName $ControlName
     
     #Writes data
     $FinalObjectList # | convertto-json -Depth 3
